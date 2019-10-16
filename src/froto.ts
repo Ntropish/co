@@ -26,7 +26,7 @@ export const sub = curry((a, b) => [a[0] - b[0], a[1] - b[1]])
 
 export const multiply = curry((amount, range: range) => [amount * range[0], amount * range[1]])
 
-export const contains = curry((range: range, value) => {
+export const contains: (range: range, value: number) => boolean = curry((range: range, value) => {
   // If clamping didn't change it then it's in the range
   return value === clamp(range, value)
 })
@@ -53,7 +53,7 @@ export const clampRange = curry((bounds, target) => {
   // these clamps erase values that are in bounds and leave ones out of bounds
   const outOfBounds = [clamp([0, Infinity], distances[0]), clamp([-Infinity, 0], distances[1])]
   // then, translate the target range the average value of the remaining non-zero values
-  const countTruthy = (count, item) => count + (item ? 0 : 1)
+  const countTruthy = (count: number, item: number) => count + (item ? 0 : 1)
   const addendsCount = outOfBounds.reduce(countTruthy, 0)
   const clampedSum = outOfBounds.reduce((a, b) => a + b, 0)
   const translate = clampedSum / (addendsCount || 1)

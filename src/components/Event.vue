@@ -1,21 +1,21 @@
 <template>
   <div class="event" :style="eventStyle">
-    <div class="top">private</div>
+    <div class="top">
+      <div class="sub" @click="$emit('remove')">-</div>
+    </div>
     <div class="middle">
-      <div class="from" :class="{empty: !e.from}"> {{ e.from || 'from' }} </div>
       <div class="handle" v-hammer:pan="drag" v-hammer:panstart="dragStart">|||</div>
-      <div class="to" :class="{empty: !e.to}">{{ e.to || 'to' }} </div>
+      <div class="from" :class="{empty: !e.from}">{{ e.from || 'from' }}</div>
+      <div class="to" :class="{empty: !e.to}">{{ e.to || 'to' }}</div>
     </div>
     <div class="bottom">
       <div class="add" @click="$emit('create')">+</div>
     </div>
-    <arrow :path="[e.position, getNode(n).position]" :view="view" v-for="n in next"></arrow>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import Arrow from './Arrow.vue'
 import { node } from '@/data/node'
 import * as ft from '@/froto'
 import { spawnSchedule } from '@/data/schedule'
@@ -23,16 +23,14 @@ import { $event } from '@/data/event'
 
 const unitClamp = ft.clamp([0, 1])
 
-@Component({
-  components: { Arrow }
-})
+@Component
 export default class Event extends Vue {
   name = 'Event'
   dragOffset = [0, 0]
-  @Prop() private id!: symbol
+  @Prop() private id!: string
   @Prop() private view!: [[number, number], [number, number]]
 
-  dragStart(e) {
+  dragStart(e: any) {
     e.target.setPointerCapture(e.pointers[0].pointerId)
     let mouseX = ft.from(this.view[0], e.center.x)
     let x = ft.duration([this.e.position[0], mouseX])
@@ -42,20 +40,20 @@ export default class Event extends Vue {
 
     this.dragOffset = [x, y]
   }
-  drag(e) {
+  drag(e: any) {
     let mouseX = ft.from(this.view[0], e.center.x)
     let x = unitClamp(ft.duration([this.dragOffset[0], mouseX]))
     let mouseY = ft.from(this.view[1], e.center.y)
     let y = unitClamp(ft.duration([this.dragOffset[1], mouseY]))
 
-    const newEvent = { ...$event.s[this.id], position: [ x, y] }
+    const newEvent = { ...$event.s[this.id], position: [x, y] }
     Vue.set($event.s, this.id, newEvent)
   }
-  dragStop(e) {
+  dragStop(e: any) {
     e.target.releasePointerCapture(e.pointers[0].pointerId)
   }
 
-  getNode(id) {
+  getNode(id: string) {
     return $event.s[id]
   }
   get e() {
@@ -70,8 +68,8 @@ export default class Event extends Vue {
   get eventStyle() {
     const e = $event.s[this.id]
     return {
-      top: e.position[1] * 100 + '%',
-      left: e.position[0] * 100 + '%',
+      top: `${e.position[1] * 100}%`,
+      left: `${e.position[0] * 100}%`,
     }
   }
 }
@@ -79,35 +77,22 @@ export default class Event extends Vue {
 <style scoped>
 .event {
   font-size: 1rem;
+  position: absolute;
+  user-select: none;
+  line-height: 1.6rem;
+  background: hsla(0, 0%, 15%, 1);
+  /* box-shadow: 0 0.1rem 0.2rem hsla(0, 0%, 0%, 0.4); */
   display: flex;
   flex-direction: column;
-  position: absolute;
-  padding: 0 1em;
-  width: 10em;
-  user-select: none; 
-  height: 7em;
-  line-height: 1.2rem;
-}
-.middle {
-  line-height: 3rem;
-  flex: 0 0 3rem;
-  align-items: stretch;
-  font-size: 1rem;
-  display: flex;
-  flex-direction: row;
   user-select: none;
-}
-.top {
-  flex: 1 1 0;
-  color: hsla(0, 0%, 100%, 0.3);
-  font-weight: 800;
-}
-.bottom {
-  display: flex;
   align-items: stretch;
-  justify-content: center;
-  flex: 1 1 0;
-  line-height: 2em;
+  line-height: 3rem;
+  width: 8rem;
+}
+
+.middle {
+  display: flex;
+  justify-content: space-around;
 }
 
 .from {
@@ -126,7 +111,7 @@ export default class Event extends Vue {
 }
 .handle {
   color: hsla(0, 0%, 100%, 0.3);
-  font-weight: 800;
+  font-weight: 600;
   border-radius: 0.2rem;
   flex: 1 1 0;
   cursor: grab;
@@ -136,16 +121,30 @@ export default class Event extends Vue {
 }
 .empty {
   color: hsla(0, 0%, 100%, 0.3);
-  font-weight: 800;
+  font-weight: 600;
 }
 .add {
   color: hsla(0, 0%, 100%, 0.3);
-  font-weight: 800;
+  font-weight: 600;
   border-radius: 0.2rem;
-  flex: 0 0 3rem;
-  /* height: 3rem; */
+  position: absolute;
+  top: 100%;
+  right: 100%;
+  width: 2rem;
 }
 .add:hover {
+  background: hsla(0, 0%, 100%, 0.2);
+}
+.sub {
+  color: hsla(0, 0%, 100%, 0.3);
+  font-weight: 600;
+  border-radius: 0.2rem;
+  position: absolute;
+  bottom: 100%;
+  right: 100%;
+  width: 2rem;
+}
+.sub:hover {
   background: hsla(0, 0%, 100%, 0.2);
 }
 </style>

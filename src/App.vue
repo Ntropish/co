@@ -13,8 +13,10 @@ import { node, spawnNode } from './data/node'
 import { view } from './data/view'
 
 const root = spawnNode('root')
-node.s.get(root).children.push(spawnNode('a'))
-node.s.get(root).children.push(spawnNode('b'))
+node.s.get(root).children.push(spawnNode('sum'))
+node.s.get(root).children.push(spawnNode('log'))
+node.s.get(root).children.push(spawnNode('child 1'))
+node.s.get(root).children.push(spawnNode('child 2'))
 
 @Component({
   components: { Descendants, Schedule },
@@ -23,7 +25,7 @@ export default class App extends Vue {
   root = root
   node = node
 }
-</script>'
+</script>
 
 <style>
 html,
@@ -34,7 +36,7 @@ body {
   height: 100%;
 }
 html {
-  background: hsla(0, 0%, 0%, 0.9)
+  background: hsl(0, 0%, 10%);
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

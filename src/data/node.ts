@@ -21,7 +21,25 @@ export function spawnNode(name: string) {
 
 const rootId = spawnNode('root')
 const root = node.s.get(rootId)
-root.children.push(spawnNode('a'))
-root.children.push(spawnNode('b'))
+
+const sumId = spawnNode('sum')
+const sum = node.s.get(sumId)
+
+sum.children.push(spawnNode('> reset'))
+sum.children.push(spawnNode('> insert'))
+sum.children.push(spawnNode('< out'))
+
+root.children.push(sumId)
+root.children.push(spawnNode('< render'))
+root.children.push(spawnNode('> log'))
+root.children.push(spawnNode('child 1'))
+
+const childId = spawnNode('child 2')
+const child = node.s.get(childId)
+
+child.children.push(spawnNode('> custom'))
+child.children.push(spawnNode('< interface'))
+
+root.children.push(childId)
 
 Vue.set(node, 'root', rootId)
