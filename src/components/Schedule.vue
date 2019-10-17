@@ -17,11 +17,14 @@
             viewBox="0 0 10 10"
             refX="5"
             refY="5"
-            markerWidth="12"
-            markerHeight="12"
+            markerWidth="8"
+            markerHeight="8"
             orient="auto-start-reverse"
+            stroke-width="1"
+            stroke="hsl(0, 0%, 30%)"
+            fill="none"
           >
-            <path d="M 0 0 L 10 5 L 0 10 z" />
+            <path d="M 0 0 L 5 5 L 0 10" />
           </marker>
         </defs>
         <arrow :path="arrow.path" :key="arrow.from + arrow.to" v-for="arrow in arrows" />
@@ -43,7 +46,7 @@ import debounce from 'debounce'
 
 type range = [number, number]
 
-const NODE_RADIUS = 150
+const NODE_RADIUS = 500
 function pathString(path: range[]) {
   // First coordinate just moves into position
   let pathString = 'M ' + path[0].join(' ')
@@ -52,14 +55,27 @@ function pathString(path: range[]) {
   path.slice(1).forEach((coord: range, i) => {
     // i is actually i - 1 because of the slice
     const last = path[i]
-    if (ft.contains([last[1] - NODE_RADIUS, last[1] + NODE_RADIUS], coord[1])) {
-      // left/right arrows
-      let midX = ft.to([coord[0], last[0]], 0.5)
-      pathString += `C ${midX} ${last[1]} ${midX} ${coord[1]} ${coord[0]} ${coord[1]}`
-    } else {
-      let midY = ft.to([coord[1], last[1]], 0.5)
-      pathString += `C ${last[0]} ${midY} ${coord[0]} ${midY} ${coord[0]} ${coord[1]}`
-    }
+    const xRange = [last[0], coord[0]] as range
+    const yRange = [last[1], coord[1]] as range
+    const fromNodeRadius = ft.from([-NODE_RADIUS, NODE_RADIUS])
+    const normalClamp = ft.clamp([0, 1])
+
+    const yDuration = Math.abs(ft.duration(yRange))
+    const xDuration = Math.abs(ft.duration(xRange))
+
+    const horizontal = normalClamp(fromNodeRadius(-yDuration))
+    const vertical = normalClamp(fromNodeRadius(-xDuration))
+
+    let midY = ft.to([coord[1], last[1]], 0.5)
+    let midX = ft.to([coord[0], last[0]], 0.5)
+
+    console.log('hor', horizontal)
+    console.log('ver', vertical)
+
+    let handleOne = ft.to([last[0], midX], horizontal) + ' ' + ft.to([last[1], midY], vertical)
+    let handleTwo = ft.to([coord[0], midX], horizontal) + ' ' + ft.to([coord[1], midY], vertical)
+
+    pathString += `C ${handleOne} ${handleTwo} ${coord[0]} ${coord[1]}`
   })
   return pathString
 }
@@ -163,7 +179,7 @@ export default class Schedule extends Vue {
 .schedule {
   display: flex;
   flex-direction: column;
-  padding: 1em 1em 5em;
+  overflow: hidden;
 }
 .box {
   flex: 1 1 0;

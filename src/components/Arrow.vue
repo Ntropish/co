@@ -1,5 +1,5 @@
 <template>
-  <path :d="path" stroke-width="2" marker-mid="url(#arrow)" stroke="hsl(0, 0%, 15%)" fill="none" />
+  <path :d="path" stroke-width="4" marker-end="url(#arrow)" stroke="hsl(0, 0%, 30%)" fill="none" />
 </template>
 
 <script lang="ts">

@@ -68,14 +68,15 @@ export default class Event extends Vue {
   get eventStyle() {
     const e = $event.s[this.id]
     return {
-      top: `${e.position[1] * 100}%`,
-      left: `${e.position[0] * 100}%`,
+      top: `calc(${e.position[1] * 100}% + 1rem)`,
+      left: `calc(${e.position[0] * 100}% + 1rem)`,
     }
   }
 }
 </script>
 <style scoped>
 .event {
+  color: hsla(0, 0%, 100%, 0.7);
   font-size: 1rem;
   position: absolute;
   user-select: none;
@@ -110,7 +111,6 @@ export default class Event extends Vue {
   background: hsla(0, 0%, 100%, 0.2);
 }
 .handle {
-  color: hsla(0, 0%, 100%, 0.3);
   font-weight: 600;
   border-radius: 0.2rem;
   flex: 1 1 0;
@@ -120,24 +120,24 @@ export default class Event extends Vue {
   background: hsla(0, 0%, 100%, 0.2);
 }
 .empty {
-  color: hsla(0, 0%, 100%, 0.3);
+  color: hsla(0, 0%, 100%, 0.4);
   font-weight: 600;
 }
 .add {
-  color: hsla(0, 0%, 100%, 0.3);
-  font-weight: 600;
+  font-weight: 800;
   border-radius: 0.2rem;
   position: absolute;
   top: 100%;
   right: 100%;
   width: 2rem;
+  color: hsla(0, 0%, 100%, 0.4);
 }
 .add:hover {
   background: hsla(0, 0%, 100%, 0.2);
 }
 .sub {
-  color: hsla(0, 0%, 100%, 0.3);
-  font-weight: 600;
+  color: hsla(0, 0%, 100%, 0.4);
+  font-weight: 800;
   border-radius: 0.2rem;
   position: absolute;
   bottom: 100%;

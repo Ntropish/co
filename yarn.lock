@@ -732,6 +732,11 @@
     error-stack-parser "^2.0.0"
     string-width "^2.0.0"
 
+"@types/cytoscape@^3.8.0", "@types/cytoscape@^3.8.3":
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/@types/cytoscape/-/cytoscape-3.8.3.tgz#da4d8dc08e04668b94cff1fabb1dac5628d6c189"
+  integrity sha512-7clLxmOi5FIbaindK/dakfI7SkTUKK2Yvnphw/8uTWzJXdOYtJVFLxOnoieHVFd6VCmcuDxrrq88RK7UxKieIQ==
+
 "@types/debounce@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@types/debounce/-/debounce-1.2.0.tgz#9ee99259f41018c640b3929e1bb32c3dcecdb192"
@@ -1082,6 +1087,13 @@
     prettier "1.16.3"
     source-map "~0.6.1"
     vue-template-es2015-compiler "^1.9.0"
+
+"@vue/composition-api@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@vue/composition-api/-/composition-api-0.3.2.tgz#2d797028e489bf7812f08c7bb33ffd03ef23c617"
+  integrity sha512-fD4dn9cJX62QSP2TMFLXCOQOa+Bu2o7kWDjrU/FNLkNqPPcCKBLxCH/Lc+gNCRBKdEUGyI3arjAw7j0Yz1hnvw==
+  dependencies:
+    tslib "^1.9.3"
 
 "@vue/eslint-config-prettier@^5.0.0":
   version "5.0.0"
@@ -2988,6 +3000,29 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
+cytoscape-compound-drag-and-drop@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/cytoscape-compound-drag-and-drop/-/cytoscape-compound-drag-and-drop-1.0.0.tgz#19bafe2b804d8275d8dae89724597e7de5bf5fd0"
+  integrity sha512-JbRR3+jrVd89l9k04L/YEKw9pFSc5gfQnGcAoDUGeJVe/6gMzQhBLWlytspGc95l8+45jlRERZt7tG1CsQ0GCQ==
+
+cytoscape-context-menus@^3.0.7:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/cytoscape-context-menus/-/cytoscape-context-menus-3.0.7.tgz#834963f3b115f1ff460e346b5be1e2f626ca2583"
+  integrity sha512-YS6mXFolAbEq9roprvgJdMbsTaZP97+Q6ReHqRCkO1weOqVlEoUgSNBiT7x2nLQsYWfEnfWEkF1vdWeTVvXd3A==
+
+cytoscape-cxtmenu@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/cytoscape-cxtmenu/-/cytoscape-cxtmenu-3.1.1.tgz#9ef838546c3c99a6b0dcb22f77703f8c956255a0"
+  integrity sha512-Rttr61Z3YP71GpCaN34IekO3rQJrf8fLv8ImCfQJ0J0ROGFMgk431WxXXStG40izZxZuspqi374x/3kSlT2idg==
+
+cytoscape@^3.11.0, cytoscape@^3.8.1:
+  version "3.11.0"
+  resolved "https://registry.yarnpkg.com/cytoscape/-/cytoscape-3.11.0.tgz#c5fca7c8b3a01ba24b4d7b8f3eddb1e99d395ed3"
+  integrity sha512-xA9S5UiTjwFwZjxZCTIJjDU5ef2XSqw+/gk+bLcqdOZ496EoPSfnbozGRnKZhxKIVT++NNyWtT7fW1eLU7denQ==
+  dependencies:
+    heap "^0.2.6"
+    lodash.debounce "^4.0.8"
+
 dashdash@^1.12.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/dashdash/-/dashdash-1.14.1.tgz#853cfa0f7cbe2fed5de20326b8dd581035f6e2f0"
@@ -4625,6 +4660,11 @@ he@1.2.x, he@^1.1.0:
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
+heap@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/heap/-/heap-0.2.6.tgz#087e1f10b046932fc8594dd9e6d378afc9d1e5ac"
+  integrity sha1-CH4fELBGky/IWU3Z5tN4r8nR5aw=
+
 hex-color-regex@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/hex-color-regex/-/hex-color-regex-1.1.0.tgz#4c06fccb4602fe2602b3c93df82d7e7dbf1a8a8e"
@@ -5801,6 +5841,11 @@ jest@^23.6.0:
     import-local "^1.0.0"
     jest-cli "^23.6.0"
 
+jquery@^3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
+  integrity sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw==
+
 js-beautify@^1.6.12, js-beautify@^1.6.14:
   version "1.10.2"
   resolved "https://registry.yarnpkg.com/js-beautify/-/js-beautify-1.10.2.tgz#88c9099cd6559402b124cfab18754936f8a7b178"
@@ -6107,6 +6152,11 @@ locate-path@^3.0.0:
   dependencies:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
+
+lodash.debounce@^4.0.8:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
+  integrity sha1-gteb/zCmfEAF/9XiUVMArZyk168=
 
 lodash.defaultsdeep@^4.6.1:
   version "4.6.1"
@@ -9367,7 +9417,7 @@ tsconfig@^7.0.0:
     strip-bom "^3.0.0"
     strip-json-comments "^2.0.0"
 
-tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
+tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
@@ -9678,6 +9728,19 @@ vue-class-component@^7.0.1, vue-class-component@^7.0.2:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-7.1.0.tgz#b33efcb10e17236d684f70b1e96f1946ec793e87"
   integrity sha512-G9152NzUkz0i0xTfhk0Afc8vzdXxDR1pfN4dTwE72cskkgJtdXfrKBkMfGvDuxUh35U500g5Ve4xL8PEGdWeHg==
+
+vue-cytoscape@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/vue-cytoscape/-/vue-cytoscape-1.0.6.tgz#a12e7c746c94749fce4a7f5518bfae296d31ee03"
+  integrity sha512-bni8mVmMJQKZneaizsbD11/E07MwdljRj8DVoTZE1haERkiGyaVXLejTjP97ISvEXXmAMZb5Rd3ooIH8WJetlg==
+  dependencies:
+    "@types/cytoscape" "^3.8.0"
+    core-js "^2.6.5"
+    cytoscape "^3.8.1"
+    eslint-plugin-prettier "^3.1.0"
+    vue "^2.6.10"
+    vue-class-component "^7.0.2"
+    vue-property-decorator "^8.1.0"
 
 vue-eslint-parser@^2.0.3:
   version "2.0.3"
