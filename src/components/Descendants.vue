@@ -1,5 +1,5 @@
 <template>
-  <div class="root">
+  <div class="descendants">
     <div
       class="descendant"
       :key="descendant.id"
@@ -24,8 +24,7 @@ export default class Descendants extends Vue {
 
   nodeStyle(depth: number): any {
     return {
-      position: 'relative',
-      left: depth + 'em',
+      marginLeft: depth + 'em',
     }
   }
 
@@ -51,10 +50,14 @@ export default class Descendants extends Vue {
 </script>
 
 <style scoped>
-.root {
+.descendants {
+  user-select: none;
   display: flex;
   flex-direction: column;
   padding: 2em;
   text-align: left;
+  background: hsla(30, 10%, 850%, 0.9);
+  font-size: 1.6rem;
+  flex: 0 1;
 }
 </style>

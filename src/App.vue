@@ -1,11 +1,14 @@
 <template>
-  <cytoscape
-    ref="cy"
-    :config="config"
-    :preConfig="preConfig"
-    :afterCreated="applyCytoPlugins"
-    id="app"
-  />
+  <div class="root">
+    <Descendants />
+    <cytoscape
+      ref="cy"
+      :config="config"
+      :preConfig="preConfig"
+      :afterCreated="applyCytoPlugins"
+      id="app"
+    />
+  </div>
 </template>
 
 <script lang="ts">
@@ -33,116 +36,81 @@ export default class App extends Vue {
   node = node
   preConfig(cytoscape) {
     // it can be used both ways
-    cytoscape.use(compoundDragAndDrop)
+    // cytoscape.use(compoundDragAndDrop)
+    console.dir(this)
     cytoscape.use(cxtmenu)
   }
   applyCytoPlugins(cy) {
-    cy.compoundDragAndDrop({})
+    // cy.compoundDragAndDrop({})
     cy.cxtmenu({
-      menuRadius: 200,
+      menuRadius: 100,
       selector: 'node',
       commands: [
         {
-          // example command
-          fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
-          content: 'remove', // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          content: 'remove',
+          contentStyle: {},
           select: function(ele) {
-            // a function to execute when the command is selected
-            //console.log(ele.id()) // `ele` holds the reference to the active element
+            cy.remove('#' + ele.data().id)
           },
-          enabled: true, // whether the command is selectable
+          enabled: true,
+        },
+        {
+          content: 'connect',
+          contentStyle: {},
+          select: function(ele, event) {
+            const selected = cy.$(':selected')
+            selected.each(source => {
+              cy.add({
+                data: { type: 'edge', source: source.data().id, target: ele.data().id },
+              })
+            })
+          },
+          enabled: true,
         },
       ],
     })
     cy.cxtmenu({
-      menuRadius: 200,
+      menuRadius: 100,
       selector: 'core',
       commands: [
         {
-          // example command
-          fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
-          content: 'a command name', // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
-          select: function(ele) {
-            // a function to execute when the command is selected
-            //console.log(ele.id()) // `ele` holds the reference to the active element
+          content: 'add',
+          contentStyle: {},
+          select: function(ele, event) {
+            const result = cy.add({
+              data: { type: 'event', name: 'event' },
+              position: event.position,
+            })
+            const newEvent = result[0]
+            const selected = cy.$(':selected')
+            if (selected.length) {
+              selected.each(select => {
+                const edge = { type: 'edge', source: select.data().id, target: newEvent.data().id }
+                cy.add({ data: edge })
+              })
+            }
           },
-          enabled: true, // whether the command is selectable
+          enabled: true,
+        },
+      ],
+    })
+    cy.cxtmenu({
+      menuRadius: 100,
+      selector: 'edge',
+      commands: [
+        {
+          content: 'remove',
+          contentStyle: {},
+          select: function(ele, event) {
+            cy.remove('#' + ele.data().id)
+          },
+          enabled: true,
         },
       ],
     })
   }
   config = {
-    elements: [
-      // flat array of nodes and edges
-      {
-        // node n1
-        group: 'nodes', // 'nodes' for a node, 'edges' for an edge
-        // NB the group field can be automatically inferred for you but specifying it
-        // gives you nice debug messages if you mis-init elements
-
-        data: {
-          // element data (put json serialisable dev data here)
-          id: 'n1', // mandatory (string) id for each element, assigned automatically on undefined
-          parent: 'nparent', // indicates the compound node parent id; not defined => no parent
-          // (`parent` can be effectively changed by `eles.move()`)
-        },
-
-        // scratchpad data (usually temp or nonserialisable data)
-        scratch: {
-          _foo: 'bar', // app fields prefixed by underscore; extension fields unprefixed
-        },
-
-        position: {
-          // the model position of the node (optional on init, mandatory after)
-          x: 100,
-          y: 100,
-        },
-
-        selected: false, // whether the element is selected (default false)
-
-        selectable: true, // whether the selection state is mutable (default true)
-
-        locked: false, // when locked a node's position is immutable (default false)
-
-        grabbable: true, // whether the node can be grabbed and moved by the user
-
-        pannable: false, // whether dragging the node causes panning instead of grabbing
-
-        classes: ['foo', 'bar'], // an array (or a space separated string) of class names that the element has
-      },
-
-      {
-        // node n2
-        data: { id: 'n2' },
-        renderedPosition: { x: 200, y: 200 }, // can alternatively specify position in rendered on-screen pixels
-      },
-
-      {
-        // node n3
-        data: { id: 'n3', parent: 'nparent' },
-        position: { x: 123, y: 234 },
-      },
-
-      {
-        // node nparent
-        data: { id: 'nparent' },
-      },
-
-      {
-        // edge e1
-        data: {
-          id: 'e1',
-          // inferred as an edge because `source` and `target` are specified:
-          source: 'n1', // the source node id (edge comes from this node)
-          target: 'n2', // the target node id (edge goes to this node)
-          // (`source` and `target` can be effectively changed by `eles.move()`)
-        },
-
-        pannable: true, // whether dragging on the edge causes panning
-      },
-    ],
+    elements: [],
 
     layout: {
       name: 'preset',
@@ -153,7 +121,27 @@ export default class App extends Vue {
       {
         selector: 'node',
         style: {
-          label: 'data(id)',
+          label: 'data(name)',
+          shape: 'rectangle',
+          width: 100,
+          height: 40,
+          'text-valign': 'center',
+          color: 'white',
+          'background-color': 'hsl(0, 0%, 20%)',
+        },
+      },
+      {
+        selector: 'node:selected',
+        style: {
+          'background-color': 'hsl(145, 60%, 40%)',
+        },
+      },
+      {
+        selector: 'edge',
+        style: {
+          width: 6,
+          'curve-style': 'bezier',
+          'target-arrow-shape': 'triangle',
         },
       },
     ],
@@ -174,21 +162,32 @@ body {
   height: 100%;
 }
 html {
-  /* background: hsl(0, 0%, 10%); */
-}
-#app > div {
-  height: 100%;
-}
-#app {
-  position: relative;
+  background: hsl(0, 0%, 10%);
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+#app > div {
+  height: 100%;
+  flex-grow: 1;
+}
+#app {
+  position: relative;
+  overflow: hidden;
+
   color: hsla(0, 0%, 100%, 0.7);
-  width: 100%;
+  /* width: 100%; */
+  flex-grow: 1;
+  min-width: 0;
   height: 100%;
 }
-
+.root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
 .schedule {
   flex: 1.618 1 0;
 }
@@ -196,3 +195,5 @@ html {
   flex: 1 1 0;
 }
 </style>
+
+
