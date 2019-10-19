@@ -22,7 +22,6 @@ export default class Node extends Vue {
   name = 'Node'
 
   get node() {
-    console.log(node.s, this.id)
     return node.s.get(this.id)
   }
   view = view

@@ -1,13 +1,18 @@
 <template>
   <div class="root">
-    <Descendants />
+    <div class="text">
+      <input placeholder="Title" type="text" class="title-input input" />
+      <Descendants />
+    </div>
     <cytoscape
       ref="cy"
       :config="config"
       :preConfig="preConfig"
       :afterCreated="applyCytoPlugins"
       id="app"
-    />
+    >
+      <cy-element v-for="def in defs" :key="def.data.id" :definition="def" />
+    </cytoscape>
   </div>
 </template>
 
@@ -15,33 +20,64 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Descendants from './components/Descendants.vue'
 import Schedule from './components/Schedule.vue'
-import { node, spawnNode } from './data/node'
 import { view } from './data/view'
 import jquery from 'jquery'
 import contextMenus from 'cytoscape-context-menus'
 import 'cytoscape-context-menus/cytoscape-context-menus.css'
 import compoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
 import cxtmenu from 'cytoscape-cxtmenu'
-const root = spawnNode('root')
-node.s.get(root).children.push(spawnNode('sum'))
-node.s.get(root).children.push(spawnNode('log'))
-node.s.get(root).children.push(spawnNode('child 1'))
-node.s.get(root).children.push(spawnNode('child 2'))
+
+export const schedule = Vue.observable({
+  s: new Map(),
+  root: null,
+})
+
+export const frame = Vue.observable({
+  s: new Map(),
+  root: null,
+})
+
+function spawnSchedule() {
+  const symbol = Symbol('Schedule')
+  schedule.s.set(symbol, {
+    symbol,
+    defs: [
+      {
+        data: { type: 'event', root: true, from: null, to: null },
+        position: { x: 0, y: 0 },
+      },
+    ],
+  })
+  return symbol
+}
+
+export function spawnFrame(name: string) {
+  const symbol = Symbol('Frame')
+  frame.s.set(symbol, {
+    name,
+    schedule: spawnSchedule(),
+    children: [],
+    puts: [],
+    takes: [],
+  })
+  return symbol
+}
+
+const rootFrame = spawnFrame('root')
+frame.s.get(rootFrame).children.push(spawnFrame('sum'))
+frame.s.get(rootFrame).children.push(spawnFrame('log'))
+frame.s.get(rootFrame).children.push(spawnFrame('child 1'))
+frame.s.get(rootFrame).children.push(spawnFrame('child 2'))
 
 @Component({
   components: { Descendants, Schedule },
 })
 export default class App extends Vue {
-  root = root
-  node = node
+  frameId = rootFrame
   preConfig(cytoscape) {
-    // it can be used both ways
-    // cytoscape.use(compoundDragAndDrop)
-    console.dir(this)
     cytoscape.use(cxtmenu)
   }
   applyCytoPlugins(cy) {
-    // cy.compoundDragAndDrop({})
     cy.cxtmenu({
       menuRadius: 100,
       selector: 'node',
@@ -78,7 +114,7 @@ export default class App extends Vue {
           contentStyle: {},
           select: function(ele, event) {
             const result = cy.add({
-              data: { type: 'event', name: 'event' },
+              data: { type: 'event', name: 'event', from: null, to: null },
               position: event.position,
             })
             const newEvent = result[0]
@@ -108,6 +144,7 @@ export default class App extends Vue {
         },
       ],
     })
+    // cy.add(this.schedule.def)
   }
   config = {
     elements: [],
@@ -150,6 +187,15 @@ export default class App extends Vue {
 
     selectionType: 'single',
   }
+  get frame() {
+    return frame.s.get(this.frameId)
+  }
+  get schedule() {
+    return schedule.s.get(this.frame.schedule)
+  }
+  get defs() {
+    return this.schedule.defs
+  }
 }
 </script>
 
@@ -174,7 +220,6 @@ html {
 #app {
   position: relative;
   overflow: hidden;
-
   color: hsla(0, 0%, 100%, 0.7);
   /* width: 100%; */
   flex-grow: 1;
@@ -188,11 +233,28 @@ html {
   flex-direction: row;
   align-items: stretch;
 }
+.text {
+  z-index: 1;
+  position: relative;
+  padding: 2em;
+  color: hsla(0, 0%, 100%, 0.7);
+  background: hsla(30, 20%, 30%, 0.9);
+  box-shadow: 0 0 1rem hsla(0, 0%, 0%, 0.15);
+  flex: 0 1;
+  display: flex;
+  flex-direction: column;
+}
+.title-input {
+  background: transparent;
+  font-size: 2rem;
+  padding: 0.3rem 0.4rem;
+  color: hsla(0, 0%, 100%, 0.7);
+  border: none;
+  margin-bottom: 1rem;
+  text-align: center;
+}
 .schedule {
   flex: 1.618 1 0;
-}
-.descendants {
-  flex: 1 1 0;
 }
 </style>
 

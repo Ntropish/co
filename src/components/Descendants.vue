@@ -54,10 +54,8 @@ export default class Descendants extends Vue {
   user-select: none;
   display: flex;
   flex-direction: column;
-  padding: 2em;
   text-align: left;
-  background: hsla(30, 10%, 850%, 0.9);
   font-size: 1.6rem;
-  flex: 0 1;
+  flex: 1 1 0;
 }
 </style>

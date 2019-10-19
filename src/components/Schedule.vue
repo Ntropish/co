@@ -69,9 +69,6 @@ function pathString(path: range[]) {
     let midY = ft.to([coord[1], last[1]], 0.5)
     let midX = ft.to([coord[0], last[0]], 0.5)
 
-    console.log('hor', horizontal)
-    console.log('ver', vertical)
-
     let handleOne = ft.to([last[0], midX], horizontal) + ' ' + ft.to([last[1], midY], vertical)
     let handleTwo = ft.to([coord[0], midX], horizontal) + ' ' + ft.to([coord[1], midY], vertical)
 
