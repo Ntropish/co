@@ -5,6 +5,7 @@
       :key="descendant.id"
       v-for="descendant in list"
       :style="nodeStyle(descendant.depth)"
+      @click="$emit('enter', descendant.id)"
     >{{ descendant.name }}</div>
   </div>
 </template>

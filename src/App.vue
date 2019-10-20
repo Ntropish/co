@@ -1,9 +1,10 @@
 <template>
   <div class="root">
     <div class="text">
+      <div v-if="path.length" @click="exit">^^^</div>
       <input placeholder="Title" type="text" class="title-input input" :value="frame.name" />
       <button @click="addFrame">add frame</button>
-      <Descendants :id="frameId" />
+      <Descendants :id="frameId" @enter="enter" />
     </div>
     <cytoscape
       ref="cy"
@@ -35,7 +36,8 @@ frames[rootFrame].children.push(spawnFrame('child 2'))
   components: { Descendants },
 })
 export default class App extends Vue {
-  frameId: symbol = rootFrame
+  frameId: string = rootFrame
+  path: string[] = []
 
   preConfig(cytoscape) {
     cytoscape.use(cxtmenu)
@@ -153,6 +155,29 @@ export default class App extends Vue {
   addFrame() {
     const frame = frames[this.frameId]
     Vue.set(frame, 'children', frame.children.concat(spawnFrame('anon')))
+  }
+
+  async enter(id) {
+    await this.save()
+    this.path.push(this.frameId)
+    this.frameId = id
+  }
+
+  async exit() {
+    await this.save()
+    const parent = this.path.pop()
+    this.frameId = parent
+  }
+
+  async save() {
+    let cy = await this.$refs.cy.cy
+    const raw = cy.elements().map(element => element.data())
+    const idClearedDefs = raw.map(el => {
+      let { id, ...rest } = el
+      return rest
+    })
+    console.log(idClearedDefs)
+    this.frame.defs = idClearedDefs[0]
   }
 
   get frame() {
