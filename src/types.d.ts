@@ -5,3 +5,5 @@ declare interface Frame {
   puts: any[]
   takes: any[]
 }
+
+declare module 'cytoscape-cxtmenu'

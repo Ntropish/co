@@ -1,193 +1,90 @@
 <template>
-  <div class="root">
-    <div class="text">
-      <div v-if="path.length" @click="exit">^^^</div>
-      <input placeholder="Title" type="text" class="title-input input" :value="frame.name" />
-      <button @click="addFrame">add frame</button>
-      <Descendants :id="frameId" @enter="enter" />
+  <div class="text">
+    <button v-if="path.length" @click="exit">^^^</button>
+    <input
+      placeholder="Title"
+      type="text"
+      class="title-input input"
+      @input="setName"
+      :value="frame.name"
+    />
+    <button @click="addFrame">add frame</button>
+    <div class="descendants">
+      <div
+        class="descendant"
+        :key="descendant.id"
+        v-for="descendant in list"
+        :style="nodeStyle(descendant.depth)"
+        @click="enter(descendant.id)"
+      >{{ descendant.name }}</div>
     </div>
-    <cytoscape
-      ref="cy"
-      :config="config"
-      :preConfig="preConfig"
-      :afterCreated="afterCreated"
-      id="app"
-    >
-      <cy-element v-for="def in defs" :key="def.data.id" :definition="def" />
-    </cytoscape>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import Descendants from './Descendants.vue'
-import cxtmenu from 'cytoscape-cxtmenu'
 
-import { frames, spawnFrame, Frame } from './frame'
-import { schedule } from './schedule'
-
-const rootFrame = spawnFrame('root frame')
-frames[rootFrame].children.push(spawnFrame('sum'))
-frames[rootFrame].children.push(spawnFrame('log'))
-frames[rootFrame].children.push(spawnFrame('child 1'))
-frames[rootFrame].children.push(spawnFrame('child 2'))
-
-@Component({
-  components: { Descendants },
-})
+import { frames, spawnFrame, Frame, $frame } from './frame'
+console.log(frames)
+@Component
 export default class App extends Vue {
-  frameId: string = rootFrame
   path: string[] = []
-
-  preConfig(cytoscape) {
-    cytoscape.use(cxtmenu)
-  }
-  afterCreated(cy) {
-    cy.cxtmenu({
-      menuRadius: 100,
-      selector: 'node',
-      commands: [
-        {
-          content: 'remove',
-          contentStyle: {},
-          select: function(ele) {
-            cy.remove('#' + ele.data().id)
-          },
-          enabled: true,
-        },
-        {
-          content: 'connect',
-          contentStyle: {},
-          select: function(ele, event) {
-            const selected = cy.$(':selected')
-            selected.each(source => {
-              cy.add({
-                data: { type: 'edge', source: source.data().id, target: ele.data().id },
-              })
-            })
-          },
-          enabled: true,
-        },
-      ],
-    })
-    cy.cxtmenu({
-      menuRadius: 100,
-      selector: 'core',
-      commands: [
-        {
-          content: 'add',
-          contentStyle: {},
-          select: function(ele, event) {
-            const result = cy.add({
-              data: { type: 'event', name: 'event', from: null, to: null },
-              position: event.position,
-            })
-            const newEvent = result[0]
-            const selected = cy.$(':selected')
-            if (selected.length) {
-              selected.each(select => {
-                const edge = { type: 'edge', source: select.data().id, target: newEvent.data().id }
-                cy.add({ data: edge })
-              })
-            }
-          },
-          enabled: true,
-        },
-      ],
-    })
-    cy.cxtmenu({
-      menuRadius: 100,
-      selector: 'edge',
-      commands: [
-        {
-          content: 'remove',
-          contentStyle: {},
-          select: function(ele, event) {
-            cy.remove('#' + ele.data().id)
-          },
-          enabled: true,
-        },
-      ],
-    })
-  }
-  config = {
-    elements: [],
-
-    layout: {
-      name: 'preset',
-    },
-
-    // so we can see the ids
-    style: [
-      {
-        selector: 'node',
-        style: {
-          label: 'data(name)',
-          shape: 'rectangle',
-          width: 100,
-          height: 40,
-          'text-valign': 'center',
-          color: 'white',
-          'background-color': 'hsl(0, 0%, 20%)',
-        },
-      },
-      {
-        selector: 'node:selected',
-        style: {
-          'background-color': 'hsl(145, 60%, 40%)',
-        },
-      },
-      {
-        selector: 'edge',
-        style: {
-          width: 6,
-          'curve-style': 'bezier',
-          'target-arrow-shape': 'triangle',
-        },
-      },
-    ],
-
-    wheelSensitivity: 0.05,
-
-    selectionType: 'single',
-  }
-
   addFrame() {
     const frame = frames[this.frameId]
     Vue.set(frame, 'children', frame.children.concat(spawnFrame('anon')))
   }
-
+  get frameId() {
+    return $frame.root
+  }
   async enter(id) {
     await this.save()
     this.path.push(this.frameId)
     this.frameId = id
   }
-
   async exit() {
     await this.save()
     const parent = this.path.pop()
     this.frameId = parent
   }
-
   async save() {
-    let cy = await this.$refs.cy.cy
-    const raw = cy.elements().map(element => element.data())
+    const raw = this.$cy.elements().map(element => element.data())
     const idClearedDefs = raw.map(el => {
       let { id, ...rest } = el
       return rest
     })
-    console.log(idClearedDefs)
     this.frame.defs = idClearedDefs[0]
   }
-
+  nodeStyle(depth: number): any {
+    return {
+      marginLeft: depth + 'em',
+    }
+  }
+  setName(e) {
+    debugger
+    frames[this.frameId].name = e.target.value
+  }
+  get frameName(): string {
+    if (!this.frame) return ''
+    return this.frame.name
+  }
   get frame() {
+    console.log(frames[this.frameId])
     return frames[this.frameId]
   }
-  get schedule() {
-    return schedule.s.get(this.frame.schedule)
-  }
-  get defs() {
-    return this.schedule.defs
+  get list() {
+    if (frames === null || this.id === null) return []
+    const result = []
+    const addNode = (id: string, depth = 0) => {
+      const source = frames[id]
+      if (!source) return
+      result.push({ depth, id, name: source.name })
+      for (let childId of source.children) {
+        addNode(childId, depth + 1)
+      }
+    }
+    this.frame!.children.forEach((id: string) => addNode(id))
+    console.log(result)
+    return result
   }
 }
 </script>
@@ -205,25 +102,6 @@ html {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-#app > div {
-  height: 100%;
-  flex-grow: 1;
-}
-#app {
-  position: relative;
-  overflow: hidden;
-  color: hsla(0, 0%, 100%, 0.7);
-  flex-grow: 1;
-  min-width: 0;
-  height: 100%;
-}
-.root {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
 }
 .text {
   z-index: 1;
@@ -243,8 +121,13 @@ html {
   margin-bottom: 1rem;
   text-align: center;
 }
-.schedule {
-  flex: 1.618 1 0;
+.descendants {
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  font-size: 1.6rem;
+  flex: 1 1 0;
 }
 </style>
 

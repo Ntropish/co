@@ -2,8 +2,11 @@ import { Component, Vue } from 'vue-property-decorator'
 
 export const schedule = Vue.observable({
   s: new Map(),
-  root: null,
+  active: null,
 })
+
+export const schedules = Vue.observable({})
+export const activeSchedule = Vue.observable(null)
 
 export function spawnSchedule() {
   const symbol = Symbol('Schedule')
