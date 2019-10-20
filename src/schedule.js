@@ -1,5 +1,4 @@
-import { Component, Vue } from 'vue-property-decorator'
-
+import Vue from 'vue'
 export const schedule = Vue.observable({
   s: new Map(),
   active: null,

@@ -2,30 +2,20 @@ import Vue from 'vue'
 import App from './App.vue'
 import { VueHammer } from 'vue2-hammer'
 import VueCompositionApi from '@vue/composition-api'
-
+console.log('wat')
 import VueCytoscape from 'vue-cytoscape'
 
 import cytoscape from 'cytoscape'
 import cxtmenu from 'cytoscape-cxtmenu'
 
 import { schedules, activeSchedule } from './schedule'
-import { frames, spawnFrame, $frame } from './frame.js'
+import createFrameStore from './createFrameStore.js'
 
 // ==============================================================
-
-const rootFrame = spawnFrame('root frame')
-frames[rootFrame].children.push(spawnFrame('sum'))
-frames[rootFrame].children.push(spawnFrame('log'))
-frames[rootFrame].children.push(spawnFrame('child 1'))
-frames[rootFrame].children.push(spawnFrame('child 2'))
-
-$frame.root = rootFrame
-$frame.active = rootFrame
 
 cytoscape.use(cxtmenu)
 
 const elements = activeSchedule ? schedules[activeSchedule] : []
-console.log('start with eles:', elements)
 const cy = cytoscape({
   container: document.getElementById('canvas'),
   elements,
@@ -70,13 +60,27 @@ Vue.use(VueCytoscape)
 Vue.use(VueCompositionApi)
 Vue.use(VueHammer)
 Vue.config.productionTip = false
+
+export const $frame = createFrameStore()
+
+const rootFrame = $frame.spawnFrame({ name: 'root frame' })
+$frame.spawnFrame({ name: 'sum', parent: rootFrame })
+$frame.spawnFrame({ name: 'log', parent: rootFrame })
+$frame.spawnFrame({ name: 'child 1', parent: rootFrame })
+$frame.spawnFrame({ name: 'child 2', parent: rootFrame })
+
 Vue.use({
   install(Vue, options) {
     Vue.prototype.$cy = cy
+    Vue.prototype.$frame = $frame
   },
 })
+
 new Vue({
   render: h => h(App),
+  data: {
+    $frame,
+  },
 }).$mount('#app')
 
 cy.cxtmenu({

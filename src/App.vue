@@ -21,71 +21,78 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+<script>
+import Vue from 'vue'
+// import createFrameStore from './createFrameStore.js'
 
-import { frames, spawnFrame, Frame, $frame } from './frame'
-console.log(frames)
-@Component
-export default class App extends Vue {
-  path: string[] = []
-  addFrame() {
-    const frame = frames[this.frameId]
-    Vue.set(frame, 'children', frame.children.concat(spawnFrame('anon')))
-  }
-  get frameId() {
-    return $frame.root
-  }
-  async enter(id) {
-    await this.save()
-    this.path.push(this.frameId)
-    this.frameId = id
-  }
-  async exit() {
-    await this.save()
-    const parent = this.path.pop()
-    this.frameId = parent
-  }
-  async save() {
-    const raw = this.$cy.elements().map(element => element.data())
-    const idClearedDefs = raw.map(el => {
-      let { id, ...rest } = el
-      return rest
+export default {
+  setup(props, me) {
+    console.log(props, me)
+    const $frame = me.root.$frame
+    const state = reactive({
+      path: computed(() => {
+        let result = []
+        let cursor = $frame.active
+        while (cursor) {
+          result.unshift(cursor)
+          cursor = frames[cursor].parent
+        }
+        return result
+      }),
+      frame: computed(() => frames[$frame.active]),
+      frameName: computed(() => state.frame.name),
+      list: computed(() => {
+        const result = []
+        const addNode = (id, depth = 0) => {
+          const source = frames[id]
+          if (!source) return
+          result.push({ depth, id, name: source.name })
+          for (let childId of source.children) {
+            addNode(childId, depth + 1)
+          }
+        }
+        state.frame.children.forEach(id => addNode(id))
+        return result
+      }),
     })
-    this.frame.defs = idClearedDefs[0]
-  }
-  nodeStyle(depth: number): any {
-    return {
-      marginLeft: depth + 'em',
+    function addFrame() {
+      const frame = frames[state.frameId]
+      Vue.set(frame, 'children', frame.children.concat($frame.spawnFrame('anon')))
     }
-  }
-  setName(e) {
-    debugger
-    frames[this.frameId].name = e.target.value
-  }
-  get frameName(): string {
-    if (!this.frame) return ''
-    return this.frame.name
-  }
-  get frame() {
-    console.log(frames[this.frameId])
-    return frames[this.frameId]
-  }
-  get list() {
-    if (frames === null || this.id === null) return []
-    const result = []
-    const addNode = (id: string, depth = 0) => {
-      const source = frames[id]
-      if (!source) return
-      result.push({ depth, id, name: source.name })
-      for (let childId of source.children) {
-        addNode(childId, depth + 1)
+    async function enter(id) {
+      $frame.active = id
+      await save()
+    }
+    async function exit() {
+      await save()
+      $frame.active = state.frame.parent
+    }
+    async function save() {
+      const raw = Vue.prototype.$cy.elements().map(element => element.data())
+      const idClearedDefs = raw.map(el => {
+        let { id, ...rest } = el
+        return rest
+      })
+      frames[$frame.active].defs = idClearedDefs[0]
+    }
+    function nodeStyle(depth) {
+      return {
+        marginLeft: depth + 'em',
       }
     }
-    this.frame!.children.forEach((id: string) => addNode(id))
-    console.log(result)
-    return result
-  }
+    function setName(e) {
+      frames[state.frameId].name = e.target.value
+    }
+    return {
+      ...state,
+      addFrame,
+      enter,
+      exit,
+      save,
+      nodeStyle,
+      setName,
+    }
+  },
 }
 </script>
 

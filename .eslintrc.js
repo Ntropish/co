@@ -5,7 +5,7 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: ['plugin:vue/essential', '@vue/prettier', '@vue/typescript'],
+  extends: ['plugin:vue/essential', '@vue/prettier'],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
@@ -15,7 +15,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['**/__tests__/*.{j,t}s?(x)'],
+      files: ['**/__tests__/*.js?(x)'],
       env: {
         jest: true,
       },
