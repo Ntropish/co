@@ -1,14 +1,15 @@
 <template>
   <div class="root">
     <div class="text">
-      <input placeholder="Title" type="text" class="title-input input" />
-      <Descendants />
+      <input placeholder="Title" type="text" class="title-input input" :value="frame.name" />
+      <button @click="addFrame">add frame</button>
+      <Descendants :id="frameId" />
     </div>
     <cytoscape
       ref="cy"
       :config="config"
       :preConfig="preConfig"
-      :afterCreated="applyCytoPlugins"
+      :afterCreated="afterCreated"
       id="app"
     >
       <cy-element v-for="def in defs" :key="def.data.id" :definition="def" />
@@ -18,66 +19,28 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import Descendants from './components/Descendants.vue'
-import Schedule from './components/Schedule.vue'
-import { view } from './data/view'
-import jquery from 'jquery'
-import contextMenus from 'cytoscape-context-menus'
-import 'cytoscape-context-menus/cytoscape-context-menus.css'
-import compoundDragAndDrop from 'cytoscape-compound-drag-and-drop'
+import Descendants from './Descendants.vue'
 import cxtmenu from 'cytoscape-cxtmenu'
 
-export const schedule = Vue.observable({
-  s: new Map(),
-  root: null,
-})
+import { frames, spawnFrame, Frame } from './frame'
+import { schedule } from './schedule'
 
-export const frame = Vue.observable({
-  s: new Map(),
-  root: null,
-})
-
-function spawnSchedule() {
-  const symbol = Symbol('Schedule')
-  schedule.s.set(symbol, {
-    symbol,
-    defs: [
-      {
-        data: { type: 'event', root: true, from: null, to: null },
-        position: { x: 0, y: 0 },
-      },
-    ],
-  })
-  return symbol
-}
-
-export function spawnFrame(name: string) {
-  const symbol = Symbol('Frame')
-  frame.s.set(symbol, {
-    name,
-    schedule: spawnSchedule(),
-    children: [],
-    puts: [],
-    takes: [],
-  })
-  return symbol
-}
-
-const rootFrame = spawnFrame('root')
-frame.s.get(rootFrame).children.push(spawnFrame('sum'))
-frame.s.get(rootFrame).children.push(spawnFrame('log'))
-frame.s.get(rootFrame).children.push(spawnFrame('child 1'))
-frame.s.get(rootFrame).children.push(spawnFrame('child 2'))
+const rootFrame = spawnFrame('root frame')
+frames[rootFrame].children.push(spawnFrame('sum'))
+frames[rootFrame].children.push(spawnFrame('log'))
+frames[rootFrame].children.push(spawnFrame('child 1'))
+frames[rootFrame].children.push(spawnFrame('child 2'))
 
 @Component({
-  components: { Descendants, Schedule },
+  components: { Descendants },
 })
 export default class App extends Vue {
-  frameId = rootFrame
+  frameId: symbol = rootFrame
+
   preConfig(cytoscape) {
     cytoscape.use(cxtmenu)
   }
-  applyCytoPlugins(cy) {
+  afterCreated(cy) {
     cy.cxtmenu({
       menuRadius: 100,
       selector: 'node',
@@ -144,7 +107,6 @@ export default class App extends Vue {
         },
       ],
     })
-    // cy.add(this.schedule.def)
   }
   config = {
     elements: [],
@@ -187,8 +149,14 @@ export default class App extends Vue {
 
     selectionType: 'single',
   }
+
+  addFrame() {
+    const frame = frames[this.frameId]
+    Vue.set(frame, 'children', frame.children.concat(spawnFrame('anon')))
+  }
+
   get frame() {
-    return frame.s.get(this.frameId)
+    return frames[this.frameId]
   }
   get schedule() {
     return schedule.s.get(this.frame.schedule)
@@ -221,7 +189,6 @@ html {
   position: relative;
   overflow: hidden;
   color: hsla(0, 0%, 100%, 0.7);
-  /* width: 100%; */
   flex-grow: 1;
   min-width: 0;
   height: 100%;
@@ -237,8 +204,7 @@ html {
   z-index: 1;
   position: relative;
   padding: 2em;
-  color: hsla(0, 0%, 100%, 0.7);
-  background: hsla(30, 20%, 30%, 0.9);
+  background: hsla(30, 47%, 86%, 0.596);
   box-shadow: 0 0 1rem hsla(0, 0%, 0%, 0.15);
   flex: 0 1;
   display: flex;
@@ -248,7 +214,6 @@ html {
   background: transparent;
   font-size: 2rem;
   padding: 0.3rem 0.4rem;
-  color: hsla(0, 0%, 100%, 0.7);
   border: none;
   margin-bottom: 1rem;
   text-align: center;
