@@ -341,14 +341,6 @@ html {
   height: 100%;
 }
 .cy-container {
-  /* 
-  min width is whatever the width of the content is
-  so this needs to be set back to 0 to keep the canvas
-  container flexy 😏 in flexbox. Otherwise it just
-  ratchets itself wider and wider. I think...
-   */
-  min-width: 0;
-
   flex: 1 1 0;
   display: flex;
   flex-direction: column;
@@ -362,6 +354,14 @@ html {
   display: flex;
   flex-direction: column;
   flex: 1 1 0;
+
+  /* 
+  min width is whatever the width of the content is
+  so this needs to be set back to 0 to keep the canvas
+  container flexy 😏 in flexbox. Otherwise it just
+  ratchets itself wider and wider. I think...
+   */
+  min-width: 0;
 }
 button.type-header {
   font-size: 1.236rem;
