@@ -21,15 +21,30 @@
         :value="frame.name"
       />
       <button class="button" @click="addFrame">add frame</button>
-      <div class="descendants">
-        <div
-          class="descendant"
-          :key="descendant.id"
-          v-for="descendant in list"
-          :style="nodeStyle(descendant.depth)"
-          @click="enter(descendant.id)"
-        >{{ descendant.name }}</div>
-      </div>
+      <v-expansion-panels class="entities" accordion>
+        <v-expansion-panel :style="expansionPanelStyle">
+          <v-expansion-panel-header class="type-header">Channels</v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <div
+              class="entity"
+              :key="channel.id"
+              v-for="channel in channels"
+              @click="enter(channel.id)"
+            >{{ channel.name }}</div>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <v-expansion-panel :style="expansionPanelStyle">
+          <v-expansion-panel-header class="type-header">Objects</v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <div
+              class="entity"
+              :key="object.id"
+              v-for="object in objects"
+              @click="enter(object.id)"
+            >{{ object.name }}</div>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </div>
   </div>
 </template>
@@ -38,6 +53,11 @@
 import Vue from 'vue'
 
 export default {
+  data() {
+    return {
+      expansionPanelStyle: { background: 'hsl(30, 47%, 86%)' },
+    }
+  },
   watch: {
     schedule() {
       this.setSchedule()
@@ -159,6 +179,27 @@ export default {
       this.frame.children.forEach(id => addNode(id))
       return result
     },
+    channels() {
+      const result = []
+
+      return result
+    },
+    objects() {
+      const result = []
+
+      const addNode = id => {
+        const source = this.$frame.store.s[id]
+        if (!source) return
+        result.push({ id, name: source.name })
+      }
+      this.frame.children.forEach(id => addNode(id))
+      return result
+    },
+    values() {
+      const result = []
+
+      return result
+    },
   },
   methods: {
     setSchedule() {
@@ -228,15 +269,14 @@ html {
   border: none;
   border-bottom: 1px solid hsla(0, 0%, 0%, 0.85);
 }
-.descendants {
-  user-select: none;
-  display: flex;
-  flex-direction: column;
-  text-align: left;
+.entities {
+  margin-top: 1rem;
+  /* user-select: none; */
+  /* text-align: left; */
   font-size: 1.6rem;
-  flex: 1 1 0;
+  /* flex: 1 1 0; */
 }
-.descendant:hover {
+.entity:hover {
   background: hsla(0, 0%, 0%, 0.85);
   color: hsl(30, 47%, 86%);
 }
@@ -282,5 +322,8 @@ html {
   display: flex;
   flex-direction: column;
   flex: 1 1 0;
+}
+button.type-header {
+  font-size: 1.236rem;
 }
 </style>
