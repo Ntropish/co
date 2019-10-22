@@ -47,7 +47,7 @@ export default {
     }
   },
   mounted() {
-    this.$cy.elements().on('select', e => {
+    cy.elements().on('select', e => {
       this.event = e.target.data()
       console.log(this.event)
     })
