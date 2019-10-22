@@ -4,6 +4,9 @@ import { VueHammer } from 'vue2-hammer'
 import cytoscape from 'cytoscape'
 import cxtmenu from 'cytoscape-cxtmenu'
 
+import EventBar from './EventBar.vue'
+import vuetify from './plugins/vuetify'
+
 // ==============================================================
 
 // frames
@@ -30,19 +33,21 @@ const cy = cytoscape({
     {
       selector: 'node',
       style: {
+        'font-family': ['B612', 'sans-serif'],
         label: 'data(name)',
         shape: 'rectangle',
         width: 100,
         height: 40,
         'text-valign': 'center',
-        color: 'white',
-        'background-color': 'hsl(0, 0%, 20%)',
+        'background-color': 'hsla(0, 0%, 0%, 0.85)',
+        color: 'hsl(30, 47%, 86%)',
       },
     },
     {
       selector: 'node:selected',
       style: {
-        'background-color': 'hsl(145, 60%, 40%)',
+        'background-color': 'hsl(30, 47%, 86%)',
+        color: 'hsla(0, 0%, 0%, 0.85)',
       },
     },
     {
@@ -51,6 +56,17 @@ const cy = cytoscape({
         width: 6,
         'curve-style': 'bezier',
         'target-arrow-shape': 'triangle',
+        'line-color': 'hsla(0, 0%, 0%, 0.85)',
+        'target-arrow-color': 'hsla(0, 0%, 0%, 0.85)',
+      },
+    },
+    {
+      selector: 'edge:selected',
+      style: {
+        width: 6,
+        'curve-style': 'bezier',
+        'line-color': 'hsl(30, 47%, 86%)',
+        'target-arrow-color': 'hsl(30, 47%, 86%)',
       },
     },
   ],
@@ -70,12 +86,12 @@ Vue.use({
 })
 
 new Vue({
+  vuetify,
+  render: h => h(EventBar),
+}).$mount('#event-bar')
+new Vue({
   render: h => h(App),
-  data: {
-    $frame,
-  },
 }).$mount('#app')
-
 // This loads a new schedule into cytoscape whenever the active frame changes
 new Vue({
   computed: {
@@ -137,6 +153,8 @@ cy.cxtmenu({
             cy.add({ data: edge })
           })
         }
+        selected.unselect()
+        result.select()
       },
       enabled: true,
     },
@@ -171,7 +189,13 @@ export default function createFrameStore() {
       parent,
       schedule: [
         {
-          data: { type: 'event', name: 'root event', root: true, from: null, to: null },
+          data: {
+            type: 'event',
+            name: 'root event',
+            root: true,
+            from: { type: 'import', schema: {}, name: 'in' },
+            to: { type: 'export', name: 'out' },
+          },
           position: { x: 0, y: 0 },
         },
       ],

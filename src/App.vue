@@ -1,6 +1,6 @@
 <template>
   <div class="text">
-    <button :class="{ disabled: !path.length}" @click="exit">^^^</button>
+    <button :disabled="!path.length" :class="{ disabled: !path.length}" @click="exit">^^^</button>
     <input
       placeholder="Title"
       type="text"
@@ -41,7 +41,7 @@ export default {
       return this.$frame.store.s[this.$frame.store.active]
     },
     frameName() {
-      return this.frame.store.name
+      return this.frame.name
     },
     list() {
       const result = []
@@ -49,9 +49,6 @@ export default {
         const source = this.$frame.store.s[id]
         if (!source) return
         result.push({ depth, id, name: source.name })
-        for (let childId of source.children) {
-          addNode(childId, depth + 1)
-        }
       }
       this.frame.children.forEach(id => addNode(id))
       return result
@@ -96,17 +93,17 @@ body {
   height: 100%;
 }
 html {
-  background: hsl(0, 0%, 10%);
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  background: hsl(185, 9%, 15%);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: 'B612', sans-serif;
 }
 .text {
   z-index: 1;
   position: relative;
   padding: 2em;
-  background: hsla(30, 47%, 86%, 0.74);
-  box-shadow: 0 0 1rem hsla(0, 0%, 0%, 0.15);
+  background: hsl(30, 47%, 86%);
+  box-shadow: 0 0 1rem hsla(0, 0%, 0%, 0.1);
   flex: 0 1;
   display: flex;
   flex-direction: column;
@@ -114,10 +111,12 @@ html {
 .title-input {
   background: transparent;
   font-size: 2rem;
+  font-weight: 600;
   padding: 0.3rem 0.4rem;
   border: none;
-  margin-bottom: 1rem;
+  margin: 1rem 0;
   text-align: center;
+  border: 1px solid hsla(0, 0%, 0%, 0.85);
 }
 .descendants {
   user-select: none;
@@ -127,12 +126,21 @@ html {
   font-size: 1.6rem;
   flex: 1 1 0;
 }
+.descendant:hover {
+  background: hsla(0, 0%, 0%, 0.85);
+  color: hsl(30, 47%, 86%);
+}
 button {
   background: none;
   color: hsla(0, 0%, 0%, 0.85);
-  line-height: 4rem;
+  line-height: 3rem;
   border: 1px solid hsla(0, 0%, 0%, 0.85);
-  font-size: 3rem;
+  font-size: 2rem;
+  font-weight: 100;
+}
+button:hover:not(.disabled) {
+  background: hsla(0, 0%, 0%, 0.85);
+  color: hsl(30, 47%, 86%);
 }
 button.disabled {
   border: 1px solid hsla(0, 0%, 0%, 0.15);
