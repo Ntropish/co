@@ -16,12 +16,11 @@ export default new Vuetify({
   theme: {
     themes: {
       light: {
-        background: 'hsl(30, 47%, 86%)',
-        secondary: colors.red.lighten4, // #FFCDD2
+        primary: '#DDD',
+        secondary: colors.amber.lighten2, // #FFCDD2
         accent: colors.indigo.base, // #3F51B5
       },
       dark: {
-        primary: 'hsl(30, 47%, 86%)',
         secondary: colors.red.lighten4, // #FFCDD2
         accent: colors.indigo.base, // #3F51B5
       },

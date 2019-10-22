@@ -20,8 +20,8 @@
         @input="setName"
         :value="frame.name"
       />
-      <button class="button" @click="addFrame">add frame</button>
-      <v-expansion-panels class="entities" accordion>
+
+      <v-expansion-panels class="entities" accordion :multiple="true" :value="[0,1,2]">
         <v-expansion-panel :style="expansionPanelStyle">
           <v-expansion-panel-header class="type-header">Channels</v-expansion-panel-header>
           <v-expansion-panel-content>
@@ -34,13 +34,32 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel :style="expansionPanelStyle">
-          <v-expansion-panel-header class="type-header">Objects</v-expansion-panel-header>
+          <v-expansion-panel-header class="type-header">
+            Entities
+            <div>
+              <v-btn icon class="icon-button" @click.stop="addFrame" text>
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </div>
+            <!-- <button class="square-button" @click="addFrame">add</button> -->
+          </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div
               class="entity"
               :key="object.id"
               v-for="object in objects"
               @click="enter(object.id)"
+            >{{ object.name }}</div>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <v-expansion-panel :style="expansionPanelStyle">
+          <v-expansion-panel-header class="type-header">Values</v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <div
+              class="entity"
+              :key="value.id"
+              v-for="value in values"
+              @click="enter(value.id)"
             >{{ object.name }}</div>
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -280,6 +299,19 @@ html {
   background: hsla(0, 0%, 0%, 0.85);
   color: hsl(30, 47%, 86%);
 }
+.square-button {
+  background: none;
+  color: hsla(0, 0%, 0%, 0.85);
+  line-height: 3rem;
+  border: 1px solid hsla(0, 0%, 0%, 0.85);
+  font-size: 2rem;
+  font-weight: 100;
+  flex: 0 0 3rem;
+}
+.square-button:hover:not(.disabled) {
+  background: hsla(0, 0%, 0%, 0.85);
+  color: hsl(30, 47%, 86%);
+}
 .button {
   background: none;
   color: hsla(0, 0%, 0%, 0.85);
@@ -325,5 +357,10 @@ html {
 }
 button.type-header {
   font-size: 1.236rem;
+}
+.icon-button {
+  margin: 1rem;
+  flex: 0 0 3rem;
+  width: 3rem;
 }
 </style>

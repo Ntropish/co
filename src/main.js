@@ -86,6 +86,26 @@ new Vue({
 }).$mount('#app')
 // This loads a new schedule into cytoscape whenever the active frame changes
 
+function createChannelStore() {
+  let nextId = 0
+  const store = Vue.observable({
+    s: {},
+  })
+
+  function spawnChannel() {
+    const id = '' + nextId++
+    Vue.set(store.s, id, {
+      puts: [],
+      takes: [],
+    })
+
+    return id
+  }
+  return {
+    store,
+    spawnChannel,
+  }
+}
 function createFrameStore() {
   let nextId = 0
   const store = Vue.observable({
@@ -111,8 +131,6 @@ function createFrameStore() {
         },
       ],
       children: [],
-      puts: [],
-      takes: [],
     })
 
     if (parent) {
