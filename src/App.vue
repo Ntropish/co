@@ -32,72 +32,6 @@
 <script>
 import Vue from 'vue'
 
-import cytoscape from 'cytoscape'
-import cxtmenu from 'cytoscape-cxtmenu'
-export const $frame = createFrameStore()
-const rootFrame = $frame.spawnFrame({ name: 'root frame' })
-$frame.spawnFrame({ name: 'sum', parent: rootFrame })
-$frame.spawnFrame({ name: 'log', parent: rootFrame })
-$frame.spawnFrame({ name: 'child 1', parent: rootFrame })
-$frame.spawnFrame({ name: 'child 2', parent: rootFrame })
-
-const config = {
-  container: undefined,
-  headless: true,
-  elements: [],
-  layout: {
-    name: 'preset',
-  },
-
-  style: [
-    {
-      selector: 'node',
-      style: {
-        'font-family': ['B612', 'sans-serif'],
-        label: 'data(name)',
-        shape: 'rectangle',
-        width: 100,
-        height: 40,
-        'text-valign': 'center',
-        'background-color': 'hsla(0, 0%, 0%, 0.85)',
-        color: 'hsl(30, 47%, 86%)',
-      },
-    },
-    {
-      selector: 'node:selected',
-      style: {
-        'background-color': 'hsl(30, 47%, 86%)',
-        color: 'hsla(0, 0%, 0%, 0.85)',
-      },
-    },
-    {
-      selector: 'edge',
-      style: {
-        width: 6,
-        'curve-style': 'bezier',
-        'target-arrow-shape': 'triangle',
-        'line-color': 'hsla(0, 0%, 0%, 0.85)',
-        'target-arrow-color': 'hsla(0, 0%, 0%, 0.85)',
-      },
-    },
-    {
-      selector: 'edge:selected',
-      style: {
-        width: 6,
-        'curve-style': 'bezier',
-        'line-color': 'hsl(30, 47%, 86%)',
-        'target-arrow-color': 'hsl(30, 47%, 86%)',
-      },
-    },
-  ],
-
-  wheelSensitivity: 0.05,
-  selectionType: 'single',
-}
-
-const cy = cytoscape(config)
-cytoscape.use(cxtmenu)
-
 export default {
   data() {
     return {
@@ -111,10 +45,11 @@ export default {
   },
   mounted() {
     const container = this.$refs.cy
-    cy.mount(container)
+    this.$cy.mount(container)
 
     // cstmenu needs a container to run against so we have
     // to wait until cy is mounted before registering anything
+    const cy = this.$cy
     cy.cxtmenu({
       menuRadius: 100,
       selector: 'node',
@@ -191,7 +126,7 @@ export default {
   beforeDestroy() {
     // this just unmounts anything so hopefully this happens
     // before the new one is created!
-    cy.unmount()
+    this.$cy.unmount()
   },
   computed: {
     schedule() {
@@ -201,15 +136,15 @@ export default {
     },
     path() {
       let result = []
-      let cursor = $frame.store.active
-      while (cursor && cursor !== $frame.store.root) {
+      let cursor = this.$frame.store.active
+      while (cursor && cursor !== this.$frame.store.root) {
         result.unshift(cursor)
         cursor = this.$frame.store.s[cursor].parent
       }
       return result
     },
     frame() {
-      return $frame.store.s[$frame.store.active]
+      return this.$frame.store.s[this.$frame.store.active]
     },
     frameName() {
       return this.frame.name
@@ -217,7 +152,7 @@ export default {
     list() {
       const result = []
       const addNode = (id, depth = 0) => {
-        const source = $frame.store.s[id]
+        const source = this.$frame.store.s[id]
         if (!source) return
         result.push({ depth, id, name: source.name })
       }
@@ -227,8 +162,8 @@ export default {
   },
   methods: {
     setSchedule() {
-      cy.remove('*')
-      cy.add(this.schedule)
+      this.$cy.remove('*')
+      this.$cy.add(this.schedule)
     },
     addFrame() {
       const config = { name: 'anon', parent: this.$frame.store.active }
@@ -256,54 +191,6 @@ export default {
       this.frame.name = e.target.value
     },
   },
-}
-
-function createFrameStore() {
-  let nextId = 0
-  const store = Vue.observable({
-    root: null,
-    active: null,
-    s: {},
-  })
-  function spawnFrame({ name = 'anon', parent } = {}) {
-    const id = '' + nextId++
-    Vue.set(store.s, id, {
-      name,
-      parent,
-      schedule: [
-        {
-          data: {
-            type: 'event',
-            name: 'root event',
-            root: true,
-            from: { type: 'import', schema: {}, name: 'in' },
-            to: { type: 'export', name: 'out' },
-          },
-          position: { x: 0, y: 0 },
-        },
-      ],
-      children: [],
-      puts: [],
-      takes: [],
-    })
-
-    if (parent) {
-      store.s[parent].children.push(id)
-    } else {
-      // no parent, so this has to be a new root?
-      store.root = id
-    }
-
-    // if there is no active node, this will do now
-    if (!store.active) store.active = id
-
-    return id
-  }
-
-  return {
-    store,
-    spawnFrame,
-  }
 }
 </script>
 
