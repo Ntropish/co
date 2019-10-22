@@ -38,11 +38,6 @@
 import Vue from 'vue'
 
 export default {
-  data() {
-    return {
-      cy: null,
-    }
-  },
   watch: {
     schedule() {
       this.setSchedule()
@@ -52,7 +47,7 @@ export default {
     const container = this.$refs.cy
     this.$cy.mount(container)
 
-    // cstmenu needs a container to run against so we have
+    // cxtmenu needs a container to run against so we have
     // to wait until cy is mounted before registering anything
     const cy = this.$cy
     cy.cxtmenu({
@@ -136,7 +131,6 @@ export default {
   computed: {
     schedule() {
       const sched = this.frame ? this.frame.schedule : null
-      console.log(sched)
       return sched
     },
     path() {
@@ -156,6 +150,7 @@ export default {
     },
     list() {
       const result = []
+
       const addNode = (id, depth = 0) => {
         const source = this.$frame.store.s[id]
         if (!source) return
