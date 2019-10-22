@@ -7,7 +7,12 @@
     </div>
 
     <div class="text">
-      <button :disabled="!path.length" :class="{ disabled: !path.length}" @click="exit">^^^</button>
+      <button
+        class="button"
+        :disabled="!path.length"
+        :class="{ disabled: !path.length}"
+        @click="exit"
+      >^^^</button>
       <input
         placeholder="Title"
         type="text"
@@ -15,7 +20,7 @@
         @input="setName"
         :value="frame.name"
       />
-      <button @click="addFrame">add frame</button>
+      <button class="button" @click="addFrame">add frame</button>
       <div class="descendants">
         <div
           class="descendant"
@@ -223,10 +228,10 @@ html {
   font-size: 2rem;
   font-weight: 600;
   padding: 0.3rem 0.4rem;
-  border: none;
   margin: 1rem 0;
   text-align: center;
-  border: 1px solid hsla(0, 0%, 0%, 0.85);
+  border: none;
+  border-bottom: 1px solid hsla(0, 0%, 0%, 0.85);
 }
 .descendants {
   user-select: none;
@@ -240,7 +245,7 @@ html {
   background: hsla(0, 0%, 0%, 0.85);
   color: hsl(30, 47%, 86%);
 }
-button {
+.button {
   background: none;
   color: hsla(0, 0%, 0%, 0.85);
   line-height: 3rem;
@@ -248,11 +253,11 @@ button {
   font-size: 2rem;
   font-weight: 100;
 }
-button:hover:not(.disabled) {
+.button:hover:not(.disabled) {
   background: hsla(0, 0%, 0%, 0.85);
   color: hsl(30, 47%, 86%);
 }
-button.disabled {
+.button.disabled {
   border: 1px solid hsla(0, 0%, 0%, 0.15);
   color: hsla(0, 0%, 0%, 0.15);
   font-weight: 800;
