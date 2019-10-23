@@ -365,7 +365,7 @@ html {
   padding: 1rem;
   background: hsl(30, 47%, 86%);
   box-shadow: 0 0 1rem hsla(0, 0%, 0%, 0.1);
-  flex: 0 0 30rem;
+  flex: 0 0 32rem;
   display: flex;
   flex-direction: column;
 }
