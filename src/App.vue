@@ -14,7 +14,7 @@
         <input
           placeholder="Title"
           type="text"
-          class="title-input input"
+          class="title-input input blackout"
           @input="setName"
           :value="frame.name"
         />
@@ -22,9 +22,9 @@
 
       <v-expansion-panels class="entities" accordion :multiple="true" :value="[0,1,2]">
         <v-expansion-panel :style="expansionPanelStyle">
-          <v-expansion-panel-header class="type-header">
-            Channels
-            <div>
+          <v-expansion-panel-header class="type-header light-text">
+            <span class="type-text">Channels</span>
+            <div style="flex: 0 0 3rem;">
               <v-btn icon class="icon-button" @click.stop="addChannel" text>
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
@@ -32,7 +32,12 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div :key="channel.id" v-for="(channel, index) in channels">
-              {{ channel.type === 'in' ? '&lt;' : '&gt;' }}
+              <v-btn text v-if="channel.type === 'in'" class="port-button">
+                <v-icon>mdi-arrow-right</v-icon>
+              </v-btn>
+              <v-btn text v-if="channel.type !== 'in'" class="port-button">
+                <v-icon>mdi-arrow-left</v-icon>
+              </v-btn>
               <input
                 placeholder="name"
                 type="text"
@@ -41,15 +46,15 @@
                 @change="setChannelName(index, $event)"
               />
               <v-btn icon class="icon-button" @click.stop="toggleChannel(index)" text>
-                <v-icon>mdi-swap-horizontal</v-icon>
+                <v-icon color="red darken-3">mdi-swap-horizontal</v-icon>
               </v-btn>
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel :style="expansionPanelStyle">
-          <v-expansion-panel-header class="type-header">
-            Entities
-            <div>
+          <v-expansion-panel-header class="type-header light-text">
+            <span class="type-text">Child Objects</span>
+            <div style="flex: 0 0 3rem;">
               <v-btn icon class="icon-button" @click.stop="addFrame" text>
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
@@ -57,29 +62,27 @@
             <!-- <button class="square-button" @click="addFrame">add</button> -->
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div
-              class="entity blackout"
-              :key="object.id"
-              v-for="object in objects"
-              @click="enter(object.id)"
-            >
-              <div>{{ object.name }}</div>
+            <div :key="object.id" v-for="object in objects" class="object">
+              <div
+                class="blackout light-text object-name"
+                @click="enter(object.id)"
+              >{{ object.name }}</div>
               <div v-for="channel in object.channels" :key="channel.id">
-                {{ channel.type === 'in' ? '&lt;' : '&gt;' }}
-                <input
-                  placeholder="name"
-                  type="text"
-                  class="input"
-                  :value="channel.name"
-                />
+                <v-btn text v-if="channel.type === 'in'" class="port-button">
+                  <v-icon>mdi-arrow-right</v-icon>
+                </v-btn>
+                <v-btn text v-if="channel.type !== 'in'" class="port-button">
+                  <v-icon>mdi-arrow-left</v-icon>
+                </v-btn>
+                <input placeholder="name" type="text" class="input" :value="channel.name" />
               </div>
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel :style="expansionPanelStyle">
-          <v-expansion-panel-header class="type-header">
-            Values
-            <div>
+          <v-expansion-panel-header class="type-header light-text">
+            <span class="type-text">Values</span>
+            <div style="flex: 0 0 3rem;">
               <v-btn icon class="icon-button" @click.stop="addValue" text>
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
@@ -87,7 +90,9 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div class="value-row" :key="value.id" v-for="(value, index) in values">
-              &lt;&nbsp;
+              <v-btn text class="port-button">
+                <v-icon>mdi-arrow-left</v-icon>
+              </v-btn>
               <input
                 placeholder="name"
                 type="text"
@@ -294,7 +299,7 @@ export default {
       channel.type = channel.type === 'out' ? 'in' : 'out'
     },
     setChannelName(index, event) {
-      const channel = this.$channel.store.s[index]
+      const channel = this.channels[index]
       channel.name = event.target.value
     },
     addFrame() {
@@ -357,10 +362,10 @@ html {
 .text {
   z-index: 1;
   position: relative;
-  padding: 2em;
+  padding: 1rem;
   background: hsl(30, 47%, 86%);
   box-shadow: 0 0 1rem hsla(0, 0%, 0%, 0.1);
-  flex: 0 1;
+  flex: 0 0 30rem;
   display: flex;
   flex-direction: column;
 }
@@ -375,6 +380,16 @@ html {
 .entities {
   margin-top: 1rem;
   font-size: 1.6rem;
+  overflow-y: scroll;
+}
+::-webkit-scrollbar {
+  width: 0.7rem;
+}
+::-webkit-scrollbar-track {
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 1rem;
 }
 .blackout:hover {
   background: hsla(0, 0%, 0%, 0.85);
@@ -415,7 +430,8 @@ html {
   min-width: 0;
 }
 button.type-header {
-  font-size: 1.236rem;
+  /* font-size: 2rem; */
+  flex: 1 1 0;
 }
 .frame-title-row {
   position: relative;
@@ -427,7 +443,7 @@ button.type-header {
   /* font-size: 3rem; */
   /* height: 5rem; */
 }
-.value-text {
+.light-text {
   color: hsla(0, 0%, 0%, 0.4);
 }
 .value-row {
@@ -435,5 +451,18 @@ button.type-header {
 }
 input {
   width: 10rem;
+}
+.object {
+  margin-bottom: 1rem;
+}
+.object-name {
+  margin-left: 5rem;
+}
+.port-button {
+  width: 2.5rem;
+  margin: 0 0.5rem;
+}
+.type-text {
+  margin-left: 5rem;
 }
 </style>
