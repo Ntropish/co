@@ -22,14 +22,28 @@
 
       <v-expansion-panels class="entities" accordion :multiple="true" :value="[0,1,2]">
         <v-expansion-panel :style="expansionPanelStyle">
-          <v-expansion-panel-header class="type-header">Channels</v-expansion-panel-header>
+          <v-expansion-panel-header class="type-header">
+            Channels
+            <div>
+              <v-btn icon class="icon-button" @click.stop="addChannel" text>
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </div>
+          </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div
-              class="entity"
-              :key="channel.id"
-              v-for="channel in channels"
-              @click="enter(channel.id)"
-            >{{ channel.name }}</div>
+            <div :key="channel.id" v-for="(channel, index) in channels">
+              {{ channel.type === 'in' ? '&lt;' : '&gt;' }}
+              <input
+                placeholder="name"
+                type="text"
+                class="input blackout"
+                :value="channel.name"
+                @change="setChannelName(index, $event)"
+              />
+              <v-btn icon class="icon-button" @click.stop="toggleChannel(index)" text>
+                <v-icon>mdi-swap-horizontal</v-icon>
+              </v-btn>
+            </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel :style="expansionPanelStyle">
@@ -44,22 +58,51 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div
-              class="entity"
+              class="entity blackout"
               :key="object.id"
               v-for="object in objects"
               @click="enter(object.id)"
-            >{{ object.name }}</div>
+            >
+              <div>{{ object.name }}</div>
+              <div v-for="channel in object.channels" :key="channel.id">
+                {{ channel.type === 'in' ? '&lt;' : '&gt;' }}
+                <input
+                  placeholder="name"
+                  type="text"
+                  class="input"
+                  :value="channel.name"
+                />
+              </div>
+            </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel :style="expansionPanelStyle">
-          <v-expansion-panel-header class="type-header">Values</v-expansion-panel-header>
+          <v-expansion-panel-header class="type-header">
+            Values
+            <div>
+              <v-btn icon class="icon-button" @click.stop="addValue" text>
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </div>
+          </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div
-              class="entity"
-              :key="value.id"
-              v-for="value in values"
-              @click="enter(value.id)"
-            >{{ object.name }}</div>
+            <div class="value-row" :key="value.id" v-for="(value, index) in values">
+              &lt;&nbsp;
+              <input
+                placeholder="name"
+                type="text"
+                class="input blackout"
+                :value="value[0]"
+                @change="setValueName(index, $event)"
+              />
+              <input
+                placeholder="value"
+                type="text"
+                class="input blackout"
+                :value="stringValue(value[1])"
+                @change="setValue(index, $event)"
+              />
+            </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -107,7 +150,11 @@ export default {
             const selected = cy.$(':selected')
             selected.each(source => {
               cy.add({
-                data: { type: 'edge', source: source.data().id, target: ele.data().id },
+                data: {
+                  type: 'edge',
+                  source: source.data().id,
+                  target: ele.data().id,
+                },
               })
             })
           },
@@ -131,7 +178,11 @@ export default {
             const selected = cy.$(':selected')
             if (selected.length) {
               selected.each(select => {
-                const edge = { type: 'edge', source: select.data().id, target: newEvent.data().id }
+                const edge = {
+                  type: 'edge',
+                  source: select.data().id,
+                  target: newEvent.data().id,
+                }
                 cy.add({ data: edge })
               })
             }
@@ -198,25 +249,33 @@ export default {
       return result
     },
     channels() {
-      const result = []
-
-      return result
+      if (!this.frame) return []
+      return this.frame.channels.map(
+        channelId => this.$channel.store.s[channelId]
+      )
     },
     objects() {
       const result = []
 
+      const getChannel = id => {
+        return this.$channel.store.s[id]
+      }
+
       const addNode = id => {
         const source = this.$frame.store.s[id]
         if (!source) return
-        result.push({ id, name: source.name })
+        result.push({
+          id,
+          name: source.name,
+          channels: source.channels.map(getChannel),
+        })
       }
       this.frame.children.forEach(id => addNode(id))
       return result
     },
     values() {
-      const result = []
-
-      return result
+      if (!this.frame) return []
+      return this.frame.values
     },
   },
   methods: {
@@ -224,9 +283,34 @@ export default {
       this.$cy.remove('*')
       this.$cy.add(this.schedule)
     },
+    setValueName(index, event) {
+      this.values[index][0] = event.target.value
+    },
+    setValue(index, event) {
+      this.values[index][1] = JSON.parse(event.target.value)
+    },
+    toggleChannel(index) {
+      const channel = this.channels[index]
+      channel.type = channel.type === 'out' ? 'in' : 'out'
+    },
+    setChannelName(index, event) {
+      const channel = this.$channel.store.s[index]
+      channel.name = event.target.value
+    },
     addFrame() {
       const config = { name: 'anon', parent: this.$frame.store.active }
       this.$frame.spawnFrame(config)
+    },
+    addChannel() {
+      const config = { owner: this.frame.id, name: 'anon', type: 'in' }
+      const channelId = this.$channel.spawnChannel(config)
+      this.frame.channels.push(channelId)
+    },
+    addValue() {
+      this.frame.values.push(['anon', null])
+    },
+    stringValue(value) {
+      return JSON.stringify(value, null, 2)
     },
     enter(id) {
       this.save()
@@ -262,6 +346,9 @@ body {
   height: 100%;
 }
 html {
+  overflow: hidden !important;
+}
+html {
   background: hsl(185, 9%, 15%);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -278,19 +365,18 @@ html {
   flex-direction: column;
 }
 .title-input {
-  width: 18rem;
+  flex: 1 1 0;
   background: transparent;
   font-size: 2rem;
   text-align: center;
   border: none;
   margin: 0 0 0 1rem;
-  border-bottom: 1px solid hsla(0, 0%, 0%, 0.45);
 }
 .entities {
   margin-top: 1rem;
   font-size: 1.6rem;
 }
-.entity:hover {
+.blackout:hover {
   background: hsla(0, 0%, 0%, 0.85);
   color: hsl(30, 47%, 86%);
 }
@@ -340,5 +426,14 @@ button.type-header {
   height: 100%;
   /* font-size: 3rem; */
   /* height: 5rem; */
+}
+.value-text {
+  color: hsla(0, 0%, 0%, 0.4);
+}
+.value-row {
+  display: flex;
+}
+input {
+  width: 10rem;
 }
 </style>
