@@ -7,19 +7,18 @@
     </div>
 
     <div class="text">
-      <button
-        class="button"
-        :disabled="!path.length"
-        :class="{ disabled: !path.length}"
-        @click="exit"
-      >^^^</button>
-      <input
-        placeholder="Title"
-        type="text"
-        class="title-input input"
-        @input="setName"
-        :value="frame.name"
-      />
+      <div class="frame-title-row">
+        <v-btn :disabled="!path.length" id="up-button" @click="exit" outlined large color="primary">
+          <v-icon>mdi-arrow-up-box</v-icon>
+        </v-btn>
+        <input
+          placeholder="Title"
+          type="text"
+          class="title-input input"
+          @input="setName"
+          :value="frame.name"
+        />
+      </div>
 
       <v-expansion-panels class="entities" accordion :multiple="true" :value="[0,1,2]">
         <v-expansion-panel :style="expansionPanelStyle">
@@ -279,55 +278,21 @@ html {
   flex-direction: column;
 }
 .title-input {
+  width: 18rem;
   background: transparent;
   font-size: 2rem;
-  font-weight: 600;
-  padding: 0.3rem 0.4rem;
-  margin: 1rem 0;
   text-align: center;
   border: none;
-  border-bottom: 1px solid hsla(0, 0%, 0%, 0.85);
+  margin: 0 0 0 1rem;
+  border-bottom: 1px solid hsla(0, 0%, 0%, 0.45);
 }
 .entities {
   margin-top: 1rem;
-  /* user-select: none; */
-  /* text-align: left; */
   font-size: 1.6rem;
-  /* flex: 1 1 0; */
 }
 .entity:hover {
   background: hsla(0, 0%, 0%, 0.85);
   color: hsl(30, 47%, 86%);
-}
-.square-button {
-  background: none;
-  color: hsla(0, 0%, 0%, 0.85);
-  line-height: 3rem;
-  border: 1px solid hsla(0, 0%, 0%, 0.85);
-  font-size: 2rem;
-  font-weight: 100;
-  flex: 0 0 3rem;
-}
-.square-button:hover:not(.disabled) {
-  background: hsla(0, 0%, 0%, 0.85);
-  color: hsl(30, 47%, 86%);
-}
-.button {
-  background: none;
-  color: hsla(0, 0%, 0%, 0.85);
-  line-height: 3rem;
-  border: 1px solid hsla(0, 0%, 0%, 0.85);
-  font-size: 2rem;
-  font-weight: 100;
-}
-.button:hover:not(.disabled) {
-  background: hsla(0, 0%, 0%, 0.85);
-  color: hsl(30, 47%, 86%);
-}
-.button.disabled {
-  border: 1px solid hsla(0, 0%, 0%, 0.15);
-  color: hsla(0, 0%, 0%, 0.15);
-  font-weight: 800;
 }
 
 .root {
@@ -366,9 +331,14 @@ html {
 button.type-header {
   font-size: 1.236rem;
 }
-.icon-button {
-  margin: 1rem;
-  flex: 0 0 3rem;
-  width: 3rem;
+.frame-title-row {
+  position: relative;
+  display: flex;
+  justify-content: stretch;
+}
+#up-button {
+  height: 100%;
+  /* font-size: 3rem; */
+  /* height: 5rem; */
 }
 </style>
