@@ -14,7 +14,7 @@ const config = ({ $frame, $channel }) => ({
         label: function(ele) {
           const data = ele.data()
           if (data._source && data._target) {
-            return getLabel(data._source) + ' to ' + getLabel(data._target)
+            return getLabel(data._source) + ' | ' + getLabel(data._target)
           } else if (data._source) {
             return getLabel(data._source)
           } else if (data._target) {
@@ -25,12 +25,15 @@ const config = ({ $frame, $channel }) => ({
           function getLabel(sourceOrTarget) {
             const it = sourceOrTarget
             if (it.type === 'object') {
-              const obj = $frame.store.s[it.frame]
+              const obj = $frame.store.s[it.object]
               const channel = $channel.store.s[it.channel]
               return obj.name + ' ' + channel.name
             } else if (it.type === 'channel') {
               const channel = $channel.store.s[it.channel]
               return channel.name
+            } else if (it.type === 'value') {
+              const obj = $frame.store.s[it.object]
+              return obj.values[it.index][0]
             }
           }
         },

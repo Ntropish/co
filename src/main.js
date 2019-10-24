@@ -87,6 +87,7 @@ function createFrameStore($channel) {
             _target: { type: 'channel', channel: output },
           },
           position: { x: 100, y: 75 },
+          selected: true,
         },
       ],
       children: [],

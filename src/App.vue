@@ -82,7 +82,7 @@
                   text
                   v-if="channel.type === 'in'"
                   class="port-button"
-                  @click="setTarget({ type: 'object', channel: channel.id })"
+                  @click="setTarget({ type: 'object', object: object.id, channel: channel.id })"
                 >
                   <v-icon>mdi-arrow-right</v-icon>
                 </v-btn>
@@ -90,11 +90,16 @@
                   text
                   v-if="channel.type !== 'in'"
                   class="port-button"
-                  @click="setSource({ type: 'object', channel: channel.id })"
+                  @click="setSource({ type: 'object', object: object.id, channel: channel.id })"
                 >
                   <v-icon>mdi-arrow-left</v-icon>
                 </v-btn>
-                <input placeholder="name" type="text" class="input" :value="channel.name" />
+                <input
+                  placeholder="name"
+                  type="text"
+                  class="input"
+                  :value="channel && channel.name"
+                />
               </div>
             </div>
           </v-expansion-panel-content>
@@ -110,7 +115,11 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div class="value-row" :key="value.id" v-for="(value, index) in values">
-              <v-btn text class="port-button" @click="setSource({ type: 'value', index })">
+              <v-btn
+                text
+                class="port-button"
+                @click="setSource({ type: 'value', object: $frame.store.active, index })"
+              >
                 <v-icon>mdi-arrow-left</v-icon>
               </v-btn>
               <input
@@ -196,7 +205,7 @@ export default {
           contentStyle: {},
           select: function(ele, event) {
             const result = cy.add({
-              data: { type: 'event', name: 'eventful', from: null, to: null, emoji: emoji() },
+              data: { type: 'event', name: 'eventful', _source: null, _target: null, emoji: emoji() },
               position: event.position,
             })
             const newEvent = result[0]
@@ -306,8 +315,6 @@ export default {
       const selected = this.$cy.$(':selected')
       if (selected.length) {
         selected.each(select => {
-          console.log(select)
-
           select.data({ _source: source })
         })
       }
@@ -317,7 +324,6 @@ export default {
       if (selected.length) {
         selected.each(select => {
           select.data({ _target: target })
-          console.log(select)
         })
       }
     },
