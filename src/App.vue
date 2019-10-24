@@ -23,7 +23,7 @@
       <v-expansion-panels class="entities" accordion :multiple="true" :value="[0,1,2]">
         <v-expansion-panel :style="expansionPanelStyle">
           <v-expansion-panel-header class="type-header light-text">
-            <span class="type-text">Channels</span>
+            <span class="type-text">channels</span>
             <div style="flex: 0 0 3rem;">
               <v-btn icon class="icon-button" @click.stop="addChannel" text>
                 <v-icon>mdi-plus</v-icon>
@@ -32,10 +32,20 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div :key="channel.id" v-for="(channel, index) in channels">
-              <v-btn text v-if="channel.type === 'in'" class="port-button">
+              <v-btn
+                text
+                v-if="channel.type === 'in'"
+                class="port-button"
+                @click="setSource({ type: 'channel', channel: channel.id })"
+              >
                 <v-icon>mdi-arrow-right</v-icon>
               </v-btn>
-              <v-btn text v-if="channel.type !== 'in'" class="port-button">
+              <v-btn
+                text
+                v-if="channel.type !== 'in'"
+                class="port-button"
+                @click="setTarget({ type: 'channel', channel: channel.id })"
+              >
                 <v-icon>mdi-arrow-left</v-icon>
               </v-btn>
               <input
@@ -53,7 +63,7 @@
         </v-expansion-panel>
         <v-expansion-panel :style="expansionPanelStyle">
           <v-expansion-panel-header class="type-header light-text">
-            <span class="type-text">Child Objects</span>
+            <span class="type-text">child objects</span>
             <div style="flex: 0 0 3rem;">
               <v-btn icon class="icon-button" @click.stop="addFrame" text>
                 <v-icon>mdi-plus</v-icon>
@@ -68,10 +78,20 @@
                 @click="enter(object.id)"
               >{{ object.name }}</div>
               <div v-for="channel in object.channels" :key="channel.id">
-                <v-btn text v-if="channel.type === 'in'" class="port-button">
+                <v-btn
+                  text
+                  v-if="channel.type === 'in'"
+                  class="port-button"
+                  @click="setTarget({ type: 'object', channel: channel.id })"
+                >
                   <v-icon>mdi-arrow-right</v-icon>
                 </v-btn>
-                <v-btn text v-if="channel.type !== 'in'" class="port-button">
+                <v-btn
+                  text
+                  v-if="channel.type !== 'in'"
+                  class="port-button"
+                  @click="setSource({ type: 'object', channel: channel.id })"
+                >
                   <v-icon>mdi-arrow-left</v-icon>
                 </v-btn>
                 <input placeholder="name" type="text" class="input" :value="channel.name" />
@@ -81,7 +101,7 @@
         </v-expansion-panel>
         <v-expansion-panel :style="expansionPanelStyle">
           <v-expansion-panel-header class="type-header light-text">
-            <span class="type-text">Values</span>
+            <span class="type-text">values</span>
             <div style="flex: 0 0 3rem;">
               <v-btn icon class="icon-button" @click.stop="addValue" text>
                 <v-icon>mdi-plus</v-icon>
@@ -90,7 +110,7 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div class="value-row" :key="value.id" v-for="(value, index) in values">
-              <v-btn text class="port-button">
+              <v-btn text class="port-button" @click="setSource({ type: 'value', index })">
                 <v-icon>mdi-arrow-left</v-icon>
               </v-btn>
               <input
@@ -117,7 +137,7 @@
 
 <script>
 import Vue from 'vue'
-
+import emoji from './emoji'
 export default {
   data() {
     return {
@@ -176,7 +196,7 @@ export default {
           contentStyle: {},
           select: function(ele, event) {
             const result = cy.add({
-              data: { type: 'event', name: 'eventful', from: null, to: null },
+              data: { type: 'event', name: 'eventful', from: null, to: null, emoji: emoji() },
               position: event.position,
             })
             const newEvent = result[0]
@@ -255,9 +275,7 @@ export default {
     },
     channels() {
       if (!this.frame) return []
-      return this.frame.channels.map(
-        channelId => this.$channel.store.s[channelId]
-      )
+      return this.frame.channels.map(channelId => this.$channel.store.s[channelId])
     },
     objects() {
       const result = []
@@ -284,6 +302,25 @@ export default {
     },
   },
   methods: {
+    setSource(source) {
+      const selected = this.$cy.$(':selected')
+      if (selected.length) {
+        selected.each(select => {
+          console.log(select)
+
+          select.data({ _source: source })
+        })
+      }
+    },
+    setTarget(target) {
+      const selected = this.$cy.$(':selected')
+      if (selected.length) {
+        selected.each(select => {
+          select.data({ _target: target })
+          console.log(select)
+        })
+      }
+    },
     setSchedule() {
       this.$cy.remove('*')
       this.$cy.add(this.schedule)
@@ -372,14 +409,14 @@ html {
 .title-input {
   flex: 1 1 0;
   background: transparent;
-  font-size: 2rem;
+  font-size: 1.618rem;
   text-align: center;
   border: none;
   margin: 0 0 0 1rem;
 }
 .entities {
   margin-top: 1rem;
-  font-size: 1.6rem;
+  font-size: 1.618rem;
   overflow-y: scroll;
 }
 ::-webkit-scrollbar {
@@ -464,5 +501,6 @@ input {
 }
 .type-text {
   margin-left: 5rem;
+  font-size: 1.618rem;
 }
 </style>

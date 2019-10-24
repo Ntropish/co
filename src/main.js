@@ -17,7 +17,8 @@ $frame.spawnFrame({ name: 'log', parent: rootFrame })
 $frame.spawnFrame({ name: 'child 1', parent: rootFrame })
 $frame.spawnFrame({ name: 'child 2', parent: rootFrame })
 
-const $cy = cytoscape(cyConfig)
+const config = cyConfig({ $frame, $channel })
+const $cy = cytoscape(config)
 cytoscape.use(cxtmenu)
 
 Vue.use(VueHammer)
@@ -45,6 +46,7 @@ function createChannelStore() {
   function spawnChannel({ owner, name, type }) {
     const id = '' + nextId++
     Vue.set(store.s, id, {
+      id,
       puts: [],
       takes: [],
       owner,
@@ -69,7 +71,10 @@ function createFrameStore($channel) {
   })
   function spawnFrame({ name = 'anon', parent } = {}) {
     const id = '' + nextId++
+    const input = $channel.spawnChannel({ owner: id, name: 'in', type: 'in' })
+    const output = $channel.spawnChannel({ owner: id, name: 'out', type: 'out' })
     Vue.set(store.s, id, {
+      id,
       name,
       parent,
       schedule: [
@@ -78,17 +83,14 @@ function createFrameStore($channel) {
             type: 'event',
             name: 'root event',
             root: true,
-            from: { type: 'import', schema: {}, name: 'in' },
-            to: { type: 'export', name: 'out' },
+            _source: { type: 'channel', channel: input },
+            _target: { type: 'channel', channel: output },
           },
           position: { x: 100, y: 75 },
         },
       ],
       children: [],
-      channels: [
-        $channel.spawnChannel({ owner: id, name: 'in', type: 'in' }),
-        $channel.spawnChannel({ owner: id, name: 'out', type: 'out' }),
-      ],
+      channels: [input, output],
       values: [['a', 1], ['b', 1]],
     })
 
