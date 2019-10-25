@@ -361,10 +361,11 @@ export default {
     },
     removeObject(id) {
       const index = this.frame.children.indexOf('' + id)
-      console.log(index, this.frame.children, id)
       if (index === -1) return
       this.frame.children.splice(index, 1)
-      console.log(this.frame.children)
+    },
+    removeValue(index) {
+      this.frame.values.splice(index, 1)
     },
     toggleChannel(index) {
       const channel = this.channels[index]
