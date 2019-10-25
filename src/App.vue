@@ -23,7 +23,7 @@
       <v-expansion-panels class="entities" accordion :multiple="true" :value="[0,1,2]">
         <v-expansion-panel :style="expansionPanelStyle">
           <v-expansion-panel-header class="type-header light-text">
-            <span class="type-text">channels</span>
+            <span class="type-text">ports</span>
             <div style="flex: 0 0 3rem;">
               <v-btn icon class="icon-button" @click.stop="addChannel" text>
                 <v-icon>mdi-plus</v-icon>
