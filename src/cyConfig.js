@@ -81,6 +81,7 @@ const config = ({ $frame, $channel }) => ({
 
   wheelSensitivity: 0.05,
   selectionType: 'single',
+  zoom: 3,
 })
 
 export default config
