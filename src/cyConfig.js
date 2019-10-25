@@ -14,7 +14,7 @@ const config = ({ $frame, $channel }) => ({
         label: function(ele) {
           const data = ele.data()
           if (data._source && data._target) {
-            return getLabel(data._source) + ' | ' + getLabel(data._target)
+            return getLabel(data._source) + ' — ' + getLabel(data._target)
           } else if (data._source) {
             return getLabel(data._source)
           } else if (data._target) {

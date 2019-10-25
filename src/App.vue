@@ -73,10 +73,12 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div :key="object.id" v-for="object in objects" class="object">
-              <div
-                class="blackout light-text object-name"
-                @click="enter(object.id)"
-              >{{ object.name }}</div>
+              <div class="light-text object-name">
+                <span class="blackout" @click="enter(object.id)">{{ object.name }}</span>
+                <v-btn text @click="removeObject(object.id)">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </div>
               <div v-for="channel in object.channels" :key="channel.id">
                 <v-btn
                   text
@@ -337,6 +339,13 @@ export default {
     setValue(index, event) {
       this.values[index][1] = JSON.parse(event.target.value)
     },
+    removeObject(id) {
+      const index = this.frame.children.indexOf('' + id)
+      console.log(index, this.frame.children, id)
+      if (index === -1) return
+      this.frame.children.splice(index, 1)
+      console.log(this.frame.children)
+    },
     toggleChannel(index) {
       const channel = this.channels[index]
       channel.type = channel.type === 'out' ? 'in' : 'out'
@@ -497,9 +506,12 @@ input {
 }
 .object {
   margin-bottom: 1rem;
+  position: relative;
 }
 .object-name {
-  margin-left: 5rem;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 .port-button {
   width: 2.5rem;
