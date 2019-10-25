@@ -527,7 +527,7 @@ button.type-header {
 }
 input.blackout {
   width: 10rem;
-  color: hsla(185, 9%, 25%, 0.9);
+  color: hsla(185, 9%, 35%, 0.9);
 }
 .object {
   margin-bottom: 1rem;
@@ -551,7 +551,7 @@ input.blackout {
 }
 
 .port-button:hover {
-  background: hsl(185, 9%, 25%);
+  background: hsl(185, 9%, 35%);
   color: hsl(30, 47%, 86%) !important;
 }
 .type-text {
