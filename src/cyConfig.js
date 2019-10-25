@@ -14,7 +14,7 @@ const config = ({ $frame, $channel }) => ({
         label: function(ele) {
           const data = ele.data()
           if (data._source && data._target) {
-            return getLabel(data._source) + ' — ' + getLabel(data._target)
+            return getLabel(data._source) + ' ⟶ ' + getLabel(data._target)
           } else if (data._source) {
             return getLabel(data._source)
           } else if (data._target) {
@@ -53,7 +53,7 @@ const config = ({ $frame, $channel }) => ({
       selector: 'node:selected',
       style: {
         'background-color': 'hsl(30, 47%, 86%)',
-        color: 'hsl(185, 9%, 15%)',
+        color: 'hsl(185, 9%, 25%)',
       },
     },
     {

@@ -25,7 +25,7 @@
           <v-expansion-panel-header class="type-header light-text">
             <span class="type-text">ports</span>
             <div style="flex: 0 0 3rem;">
-              <v-btn icon class="icon-button" @click.stop="addChannel" text>
+              <v-btn color="primary" icon text @click.stop="addChannel" class="port-button">
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
             </div>
@@ -33,6 +33,8 @@
           <v-expansion-panel-content>
             <div :key="channel.id" v-for="(channel, index) in channels">
               <v-btn
+                color="primary"
+                icon
                 text
                 v-if="channel.type === 'in'"
                 class="port-button"
@@ -41,6 +43,8 @@
                 <v-icon>mdi-arrow-right</v-icon>
               </v-btn>
               <v-btn
+                color="primary"
+                icon
                 text
                 v-if="channel.type !== 'in'"
                 class="port-button"
@@ -55,7 +59,13 @@
                 :value="channel.name"
                 @change="setChannelName(index, $event)"
               />
-              <v-btn icon class="icon-button" @click.stop="toggleChannel(index)" text>
+              <v-btn
+                color="primary"
+                icon
+                text
+                @click.stop="toggleChannel(index)"
+                class="port-button"
+              >
                 <v-icon color="red darken-3">mdi-swap-horizontal</v-icon>
               </v-btn>
             </div>
@@ -65,7 +75,7 @@
           <v-expansion-panel-header class="type-header light-text">
             <span class="type-text">child objects</span>
             <div style="flex: 0 0 3rem;">
-              <v-btn icon class="icon-button" @click.stop="addFrame" text>
+              <v-btn color="primary" icon text @click.stop="addFrame" class="port-button">
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
             </div>
@@ -75,12 +85,20 @@
             <div :key="object.id" v-for="object in objects" class="object">
               <div class="light-text object-name">
                 <span class="blackout" @click="enter(object.id)">{{ object.name }}</span>
-                <v-btn text @click="removeObject(object.id)">
+                <v-btn
+                  text
+                  icon
+                  color="primary"
+                  @click="removeObject(object.id)"
+                  class="port-button"
+                >
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </div>
               <div v-for="channel in object.channels" :key="channel.id">
                 <v-btn
+                  color="primary"
+                  icon
                   text
                   v-if="channel.type === 'in'"
                   class="port-button"
@@ -89,6 +107,8 @@
                   <v-icon>mdi-arrow-right</v-icon>
                 </v-btn>
                 <v-btn
+                  color="primary"
+                  icon
                   text
                   v-if="channel.type !== 'in'"
                   class="port-button"
@@ -96,12 +116,7 @@
                 >
                   <v-icon>mdi-arrow-left</v-icon>
                 </v-btn>
-                <input
-                  placeholder="name"
-                  type="text"
-                  class="input"
-                  :value="channel && channel.name"
-                />
+                <span class="nice-text">{{ channel.name }}</span>
               </div>
             </div>
           </v-expansion-panel-content>
@@ -110,7 +125,7 @@
           <v-expansion-panel-header class="type-header light-text">
             <span class="type-text">values</span>
             <div style="flex: 0 0 3rem;">
-              <v-btn icon class="icon-button" @click.stop="addValue" text>
+              <v-btn color="primary" icon text @click.stop="addValue" class="port-button">
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
             </div>
@@ -119,6 +134,8 @@
             <div class="value-row" :key="value.id" v-for="(value, index) in values">
               <v-btn
                 text
+                icon
+                color="primary"
                 class="port-button"
                 @click="setSource({ type: 'value', object: $frame.store.active, index })"
               >
@@ -138,6 +155,9 @@
                 :value="stringValue(value[1])"
                 @change="setValue(index, $event)"
               />
+              <v-btn text icon color="primary" @click="removeValue(index)" class="port-button">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -412,6 +432,7 @@ html {
   font-family: 'B612', sans-serif;
 }
 .text {
+  color: hsl(185, 9%, 25%);
   z-index: 1;
   position: relative;
   padding: 1rem;
@@ -440,11 +461,11 @@ html {
 ::-webkit-scrollbar-track {
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
+  background: hsla(185, 9%, 25%, 0.2);
   border-radius: 1rem;
 }
 .blackout:hover {
-  background: hsla(0, 0%, 0%, 0.85);
+  background: hsl(185, 9%, 25%);
   color: hsl(30, 47%, 86%);
 }
 
@@ -496,19 +517,24 @@ button.type-header {
   /* height: 5rem; */
 }
 .light-text {
-  color: hsla(0, 0%, 0%, 0.4);
+  color: hsla(185, 9%, 25%, 0.618);
+}
+.nice-text {
+  color: hsla(185, 9%, 25%);
 }
 .value-row {
   display: flex;
 }
-input {
+input.blackout {
   width: 10rem;
+  color: hsla(185, 9%, 25%, 0.9);
 }
 .object {
   margin-bottom: 1rem;
   position: relative;
 }
 .object-name {
+  cursor: pointer;
   position: absolute;
   right: 0;
   top: 0;
@@ -516,6 +542,17 @@ input {
 .port-button {
   width: 2.5rem;
   margin: 0 0.5rem;
+  color: hsla(185, 9%, 25%, 0.618) !important;
+}
+
+.port-button::before {
+  color: transparent;
+  color: hsl(30, 47%, 86%);
+}
+
+.port-button:hover {
+  background: hsl(185, 9%, 25%);
+  color: hsl(30, 47%, 86%) !important;
 }
 .type-text {
   margin-left: 5rem;
