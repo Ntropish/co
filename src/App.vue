@@ -25,20 +25,20 @@
           <v-expansion-panel-header class="type-header light-text">
             <span class="type-text">ports</span>
             <div style="flex: 0 0 3rem;">
-              <v-btn color="primary" icon text @click.stop="addChannel" class="port-button">
+              <v-btn color="primary" icon text @click.stop="addPort" class="port-button">
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div :key="channel.id" v-for="(channel, index) in channels" class="channel">
+            <div :key="port.id" v-for="(port, index) in ports" class="port">
               <v-btn
                 color="primary"
                 icon
                 text
-                v-if="channel.type === 'in'"
+                v-if="port.type === 'in'"
                 class="port-button"
-                @click="setSource({ type: 'channel', channel: channel.id })"
+                @click="setSource({ type: 'port', port: port.id })"
               >
                 <v-icon>mdi-arrow-right</v-icon>
               </v-btn>
@@ -46,9 +46,9 @@
                 color="primary"
                 icon
                 text
-                v-if="channel.type !== 'in'"
+                v-if="port.type !== 'in'"
                 class="port-button"
-                @click="setTarget({ type: 'channel', channel: channel.id })"
+                @click="setTarget({ type: 'port', port: port.id })"
               >
                 <v-icon>mdi-arrow-left</v-icon>
               </v-btn>
@@ -56,19 +56,13 @@
                 placeholder="name"
                 type="text"
                 class="input blackout expand"
-                :value="channel.name"
-                @change="setChannelName(index, $event)"
+                :value="port.name"
+                @change="setPortName(index, $event)"
               />
-              <v-btn
-                color="primary"
-                icon
-                text
-                @click.stop="toggleChannel(index)"
-                class="port-button"
-              >
+              <v-btn color="primary" icon text @click.stop="togglePort(index)" class="port-button">
                 <v-icon color="red darken-3">mdi-swap-horizontal</v-icon>
               </v-btn>
-              <v-btn text icon color="primary" @click="removeChannel(index)" class="port-button">
+              <v-btn text icon color="primary" @click="removePort(index)" class="port-button">
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </div>
@@ -98,14 +92,14 @@
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </div>
-              <div v-for="channel in object.channels" :key="channel.id">
+              <div v-for="port in object.ports" :key="port.id">
                 <v-btn
                   color="primary"
                   icon
                   text
-                  v-if="channel.type === 'in'"
+                  v-if="port.type === 'in'"
                   class="port-button"
-                  @click="setTarget({ type: 'object', object: object.id, channel: channel.id })"
+                  @click="setTarget({ type: 'object', object: object.id, port: port.id })"
                 >
                   <v-icon>mdi-arrow-right</v-icon>
                 </v-btn>
@@ -113,13 +107,13 @@
                   color="primary"
                   icon
                   text
-                  v-if="channel.type !== 'in'"
+                  v-if="port.type !== 'in'"
                   class="port-button"
-                  @click="setSource({ type: 'object', object: object.id, channel: channel.id })"
+                  @click="setSource({ type: 'object', object: object.id, port: port.id })"
                 >
                   <v-icon>mdi-arrow-left</v-icon>
                 </v-btn>
-                <span class="nice-text">{{ channel.name }}</span>
+                <span class="nice-text">{{ object.name }}</span>
               </div>
             </div>
           </v-expansion-panel-content>
@@ -307,15 +301,15 @@ export default {
       this.frame.children.forEach(id => addNode(id))
       return result
     },
-    channels() {
+    ports() {
       if (!this.frame) return []
-      return this.frame.channels.map(channelId => this.$channel.store.s[channelId])
+      return this.frame.ports.map(id => this.$port.s[id])
     },
     objects() {
       const result = []
 
-      const getChannel = id => {
-        return this.$channel.store.s[id]
+      const getPort = id => {
+        return this.$port.s[id]
       }
 
       const addNode = id => {
@@ -324,7 +318,7 @@ export default {
         result.push({
           id,
           name: source.name,
-          channels: source.channels.map(getChannel),
+          ports: source.ports.map(getPort),
         })
       }
       this.frame.children.forEach(id => addNode(id))
@@ -367,28 +361,28 @@ export default {
       if (index === -1) return
       this.frame.children.splice(index, 1)
     },
-    removeChannel(index) {
-      this.frame.channels.splice(index, 1)
+    removePort(index) {
+      this.frame.ports.splice(index, 1)
     },
     removeValue(index) {
       this.frame.values.splice(index, 1)
     },
-    toggleChannel(index) {
-      const channel = this.channels[index]
-      channel.type = channel.type === 'out' ? 'in' : 'out'
+    togglePort(index) {
+      const port = this.ports[index]
+      port.type = port.type === 'out' ? 'in' : 'out'
     },
-    setChannelName(index, event) {
-      const channel = this.channels[index]
-      channel.name = event.target.value
+    setPortName(index, event) {
+      const port = this.ports[index]
+      port.name = event.target.value
     },
     addFrame() {
       const config = { name: 'anon', parent: this.$frame.store.active }
       this.$frame.spawnFrame(config)
     },
-    addChannel() {
+    addPort() {
       const config = { owner: this.frame.id, name: 'anon', type: 'in' }
-      const channelId = this.$channel.spawnChannel(config)
-      this.frame.channels.push(channelId)
+      const portId = this.$port.spawn(config)
+      this.frame.ports.push(portId)
     },
     addValue() {
       this.frame.values.push(['anon', null])
@@ -569,7 +563,7 @@ input.blackout {
   flex-grow: 1;
 }
 
-.channel {
+.port {
   display: flex;
 }
 </style>

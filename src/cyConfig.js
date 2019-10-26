@@ -1,4 +1,4 @@
-const config = ({ $frame, $channel }) => ({
+const config = ({ $frame, $port }) => ({
   container: undefined,
   headless: true,
   elements: [],
@@ -24,13 +24,14 @@ const config = ({ $frame, $channel }) => ({
           }
           function getLabel(sourceOrTarget) {
             const it = sourceOrTarget
+
             if (it.type === 'object') {
               const obj = $frame.store.s[it.object]
-              const channel = $channel.store.s[it.channel]
-              return obj.name + ' ' + channel.name
-            } else if (it.type === 'channel') {
-              const channel = $channel.store.s[it.channel]
-              return channel.name
+              const port = $port.s[it.port]
+              return obj.name + ' ' + port.name
+            } else if (it.type === 'port') {
+              const port = $port.s[it.port]
+              return port.name
             } else if (it.type === 'value') {
               const obj = $frame.store.s[it.object]
               return obj.values[it.index][0]
