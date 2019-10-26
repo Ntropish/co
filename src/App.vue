@@ -31,7 +31,7 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div :key="channel.id" v-for="(channel, index) in channels">
+            <div :key="channel.id" v-for="(channel, index) in channels" class="channel">
               <v-btn
                 color="primary"
                 icon
@@ -55,7 +55,7 @@
               <input
                 placeholder="name"
                 type="text"
-                class="input blackout"
+                class="input blackout expand"
                 :value="channel.name"
                 @change="setChannelName(index, $event)"
               />
@@ -67,6 +67,9 @@
                 class="port-button"
               >
                 <v-icon color="red darken-3">mdi-swap-horizontal</v-icon>
+              </v-btn>
+              <v-btn text icon color="primary" @click="removeChannel(index)" class="port-button">
+                <v-icon>mdi-delete</v-icon>
               </v-btn>
             </div>
           </v-expansion-panel-content>
@@ -364,6 +367,9 @@ export default {
       if (index === -1) return
       this.frame.children.splice(index, 1)
     },
+    removeChannel(index) {
+      this.frame.channels.splice(index, 1)
+    },
     removeValue(index) {
       this.frame.values.splice(index, 1)
     },
@@ -558,5 +564,12 @@ input.blackout {
 .type-text {
   margin-left: 5rem;
   font-size: 1.618rem;
+}
+.expand {
+  flex-grow: 1;
+}
+
+.channel {
+  display: flex;
 }
 </style>

@@ -10,12 +10,12 @@ export default new Vuetify({
   theme: {
     themes: {
       light: {
-        primary: 'hsla(185, 9%, 25%, 0.9)',
+        primary: '#516061',
         secondary: colors.amber.lighten2, // #FFCDD2
         accent: colors.indigo.base, // #3F51B5
       },
       dark: {
-        primary: 'hsla(185, 9%, 25%, 0.9)',
+        primary: '#516061',
         secondary: colors.red.lighten4, // #FFCDD2
         accent: colors.indigo.base, // #3F51B5
       },
