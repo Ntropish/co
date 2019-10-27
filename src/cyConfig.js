@@ -26,14 +26,14 @@ const config = ({ $obj, $port }) => ({
             const it = sourceOrTarget
 
             if (it.type === 'object') {
-              const obj = $obj.store.s[it.object]
+              const obj = $obj.s[it.object]
               const port = $port.s[it.port]
               return obj.name + ' ' + port.name
             } else if (it.type === 'port') {
               const port = $port.s[it.port]
               return port.name
             } else if (it.type === 'value') {
-              const obj = $obj.store.s[it.object]
+              const obj = $obj.s[it.object]
               return obj.values[it.index][0]
             }
           }
