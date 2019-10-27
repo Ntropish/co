@@ -1,4 +1,4 @@
-const config = ({ $frame, $port }) => ({
+const config = ({ $obj, $port }) => ({
   container: undefined,
   headless: true,
   elements: [],
@@ -26,14 +26,14 @@ const config = ({ $frame, $port }) => ({
             const it = sourceOrTarget
 
             if (it.type === 'object') {
-              const obj = $frame.store.s[it.object]
+              const obj = $obj.store.s[it.object]
               const port = $port.s[it.port]
               return obj.name + ' ' + port.name
             } else if (it.type === 'port') {
               const port = $port.s[it.port]
               return port.name
             } else if (it.type === 'value') {
-              const obj = $frame.store.s[it.object]
+              const obj = $obj.store.s[it.object]
               return obj.values[it.index][0]
             }
           }

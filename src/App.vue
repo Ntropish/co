@@ -134,7 +134,7 @@
                 icon
                 color="primary"
                 class="port-button"
-                @click="setSource({ type: 'value', object: $frame.store.active, index })"
+                @click="setSource({ type: 'value', object: $obj.store.active, index })"
               >
                 <v-icon>mdi-arrow-left</v-icon>
               </v-btn>
@@ -260,7 +260,7 @@ export default {
         },
       ],
     })
-    // const elements = $frame.store.s[$frame.store.active].schedule
+    // const elements = $obj.store.s[$obj.store.active].schedule
     // const container = document.getElementById('cy')
 
     this.setSchedule()
@@ -277,15 +277,15 @@ export default {
     },
     path() {
       let result = []
-      let cursor = this.$frame.store.active
-      while (cursor && cursor !== this.$frame.store.root) {
+      let cursor = this.$obj.store.active
+      while (cursor && cursor !== this.$obj.store.root) {
         result.unshift(cursor)
-        cursor = this.$frame.store.s[cursor].parent
+        cursor = this.$obj.store.s[cursor].parent
       }
       return result
     },
     frame() {
-      return this.$frame.store.s[this.$frame.store.active]
+      return this.$obj.store.s[this.$obj.store.active]
     },
     frameName() {
       return this.frame.name
@@ -294,7 +294,7 @@ export default {
       const result = []
 
       const addNode = (id, depth = 0) => {
-        const source = this.$frame.store.s[id]
+        const source = this.$obj.store.s[id]
         if (!source) return
         result.push({ depth, id, name: source.name })
       }
@@ -313,7 +313,7 @@ export default {
       }
 
       const addNode = id => {
-        const source = this.$frame.store.s[id]
+        const source = this.$obj.store.s[id]
         if (!source) return
         result.push({
           id,
@@ -376,8 +376,8 @@ export default {
       port.name = event.target.value
     },
     addFrame() {
-      const config = { name: 'anon', parent: this.$frame.store.active }
-      this.$frame.spawnFrame(config)
+      const config = { name: 'anon', parent: this.$obj.store.active }
+      this.$obj.spawnFrame(config)
     },
     addPort() {
       const config = { owner: this.frame.id, name: 'anon', type: 'in' }
@@ -392,12 +392,12 @@ export default {
     },
     enter(id) {
       this.save()
-      this.$frame.store.active = id
+      this.$obj.store.active = id
     },
     exit() {
       if (typeof this.frame.parent !== 'string') return
       this.save()
-      this.$frame.store.active = this.frame.parent
+      this.$obj.store.active = this.frame.parent
     },
     save() {
       const raw = this.$cy.elements().jsons()

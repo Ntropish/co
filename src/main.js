@@ -10,14 +10,14 @@ import cxtmenu from 'cytoscape-cxtmenu'
 import cyConfig from './cyConfig.js'
 
 export const $port = createPortStore()
-export const $frame = createObjectStore($port)
-const rootFrame = $frame.spawnFrame({ name: 'root object' })
-$frame.spawnFrame({ name: 'sum', parent: rootFrame })
-$frame.spawnFrame({ name: 'log', parent: rootFrame })
-$frame.spawnFrame({ name: 'child 1', parent: rootFrame })
-$frame.spawnFrame({ name: 'child 2', parent: rootFrame })
+export const $obj = createObjectStore($port)
+const rootFrame = $obj.spawnFrame({ name: 'root object' })
+$obj.spawnFrame({ name: 'sum', parent: rootFrame })
+$obj.spawnFrame({ name: 'log', parent: rootFrame })
+$obj.spawnFrame({ name: 'child 1', parent: rootFrame })
+$obj.spawnFrame({ name: 'child 2', parent: rootFrame })
 
-const config = cyConfig({ $frame, $port })
+const config = cyConfig({ $obj, $port })
 const $cy = cytoscape(config)
 cytoscape.use(cxtmenu)
 
@@ -26,7 +26,7 @@ Vue.config.productionTip = false
 Vue.use({
   install(Vue) {
     Vue.prototype.$cy = $cy
-    Vue.prototype.$frame = $frame
+    Vue.prototype.$obj = $obj
     Vue.prototype.$port = $port
   },
 })
