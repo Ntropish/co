@@ -40,7 +40,7 @@
                 class="port-button"
                 @click="setSource({ type: 'port', port: port.id })"
               >
-                <v-icon>mdi-arrow-right</v-icon>
+                <v-icon>mdi-arrow-left</v-icon>
               </v-btn>
               <v-btn
                 color="primary"
@@ -50,7 +50,7 @@
                 class="port-button"
                 @click="setTarget({ type: 'port', port: port.id })"
               >
-                <v-icon>mdi-arrow-left</v-icon>
+                <v-icon>mdi-arrow-right</v-icon>
               </v-btn>
               <input
                 placeholder="name"
@@ -70,7 +70,7 @@
         </v-expansion-panel>
         <v-expansion-panel :style="expansionPanelStyle">
           <v-expansion-panel-header class="type-header light-text">
-            <span class="type-text">child objects</span>
+            <span class="type-text">objects</span>
             <div style="flex: 0 0 3rem;">
               <v-btn color="primary" icon text @click.stop="addObj" class="port-button">
                 <v-icon>mdi-plus</v-icon>
