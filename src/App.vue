@@ -112,7 +112,7 @@
                 >
                   <v-icon>mdi-arrow-left</v-icon>
                 </v-btn>
-                <span class="nice-text">{{ object.name }}</span>
+                <span class="nice-text">{{ port.name }}</span>
               </div>
             </div>
           </v-expansion-panel-content>
