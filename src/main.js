@@ -10,7 +10,7 @@ import cxtmenu from 'cytoscape-cxtmenu'
 import cyConfig from './cyConfig.js'
 
 export const $port = createPortStore()
-export const $frame = createFrameStore($port)
+export const $frame = createObjectStore($port)
 const rootFrame = $frame.spawnFrame({ name: 'root object' })
 $frame.spawnFrame({ name: 'sum', parent: rootFrame })
 $frame.spawnFrame({ name: 'log', parent: rootFrame })
@@ -108,7 +108,7 @@ function createPortStore() {
   }
 }
 
-function createFrameStore($port) {
+function createObjectStore($port) {
   let nextId = 0
   const store = Vue.observable({
     root: null,
