@@ -7,7 +7,7 @@
     </div>
 
     <div class="text">
-      <div class="frame-title-row">
+      <div class="obj-title-row">
         <v-btn :disabled="!path.length" id="up-button" @click="exit" outlined large color="primary">
           <v-icon>mdi-arrow-up-box</v-icon>
         </v-btn>
@@ -16,7 +16,7 @@
           type="text"
           class="title-input input blackout"
           @input="setName"
-          :value="frame.name"
+          :value="obj.name"
         />
       </div>
 
@@ -72,11 +72,10 @@
           <v-expansion-panel-header class="type-header light-text">
             <span class="type-text">child objects</span>
             <div style="flex: 0 0 3rem;">
-              <v-btn color="primary" icon text @click.stop="addFrame" class="port-button">
+              <v-btn color="primary" icon text @click.stop="addObj" class="port-button">
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
             </div>
-            <!-- <button class="square-button" @click="addFrame">add</button> -->
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div :key="object.id" v-for="object in objects" class="object">
@@ -260,7 +259,7 @@ export default {
         },
       ],
     })
-    // const elements = $obj.store.s[$obj.store.active].schedule
+    // const elements = $obj.s[$obj.store.active].schedule
     // const container = document.getElementById('cy')
 
     this.setSchedule()
@@ -272,7 +271,7 @@ export default {
   },
   computed: {
     schedule() {
-      const sched = this.frame ? this.frame.schedule : null
+      const sched = this.obj ? this.obj.schedule : null
       return sched
     },
     path() {
@@ -280,30 +279,30 @@ export default {
       let cursor = this.$obj.store.active
       while (cursor && cursor !== this.$obj.store.root) {
         result.unshift(cursor)
-        cursor = this.$obj.store.s[cursor].parent
+        cursor = this.$obj.s[cursor].parent
       }
       return result
     },
-    frame() {
-      return this.$obj.store.s[this.$obj.store.active]
+    obj() {
+      return this.$obj.s[this.$obj.store.active]
     },
-    frameName() {
-      return this.frame.name
+    objName() {
+      return this.obj.name
     },
     list() {
       const result = []
 
       const addNode = (id, depth = 0) => {
-        const source = this.$obj.store.s[id]
+        const source = this.$obj.s[id]
         if (!source) return
         result.push({ depth, id, name: source.name })
       }
-      this.frame.children.forEach(id => addNode(id))
+      this.obj.children.forEach(id => addNode(id))
       return result
     },
     ports() {
-      if (!this.frame) return []
-      return this.frame.ports.map(id => this.$port.s[id])
+      if (!this.obj) return []
+      return this.obj.ports.map(id => this.$port.s[id])
     },
     objects() {
       const result = []
@@ -313,7 +312,7 @@ export default {
       }
 
       const addNode = id => {
-        const source = this.$obj.store.s[id]
+        const source = this.$obj.s[id]
         if (!source) return
         result.push({
           id,
@@ -321,12 +320,12 @@ export default {
           ports: source.ports.map(getPort),
         })
       }
-      this.frame.children.forEach(id => addNode(id))
+      this.obj.children.forEach(id => addNode(id))
       return result
     },
     values() {
-      if (!this.frame) return []
-      return this.frame.values
+      if (!this.obj) return []
+      return this.obj.values
     },
   },
   methods: {
@@ -347,6 +346,7 @@ export default {
       }
     },
     setSchedule() {
+      if (!this.schedule) debugger
       this.$cy.remove('*')
       this.$cy.add(this.schedule)
     },
@@ -357,15 +357,15 @@ export default {
       this.values[index][1] = JSON.parse(event.target.value)
     },
     removeObject(id) {
-      const index = this.frame.children.indexOf('' + id)
+      const index = this.obj.children.indexOf('' + id)
       if (index === -1) return
-      this.frame.children.splice(index, 1)
+      this.obj.children.splice(index, 1)
     },
     removePort(index) {
-      this.frame.ports.splice(index, 1)
+      this.obj.ports.splice(index, 1)
     },
     removeValue(index) {
-      this.frame.values.splice(index, 1)
+      this.obj.values.splice(index, 1)
     },
     togglePort(index) {
       const port = this.ports[index]
@@ -375,17 +375,17 @@ export default {
       const port = this.ports[index]
       port.name = event.target.value
     },
-    addFrame() {
+    addObj() {
       const config = { name: 'anon', parent: this.$obj.store.active }
-      this.$obj.spawnFrame(config)
+      this.$obj.spawn(config)
     },
     addPort() {
-      const config = { owner: this.frame.id, name: 'anon', type: 'in' }
+      const config = { owner: this.obj.id, name: 'anon', type: 'in' }
       const portId = this.$port.spawn(config)
-      this.frame.ports.push(portId)
+      this.obj.ports.push(portId)
     },
     addValue() {
-      this.frame.values.push(['anon', null])
+      this.obj.values.push(['anon', null])
     },
     stringValue(value) {
       return JSON.stringify(value, null, 2)
@@ -395,13 +395,13 @@ export default {
       this.$obj.store.active = id
     },
     exit() {
-      if (typeof this.frame.parent !== 'string') return
+      if (typeof this.obj.parent !== 'string') return
       this.save()
-      this.$obj.store.active = this.frame.parent
+      this.$obj.store.active = this.obj.parent
     },
     save() {
       const raw = this.$cy.elements().jsons()
-      Vue.set(this.frame, 'schedule', raw)
+      Vue.set(this.obj, 'schedule', raw)
     },
     nodeStyle(depth) {
       return {
@@ -409,7 +409,7 @@ export default {
       }
     },
     setName(e) {
-      this.frame.name = e.target.value
+      this.obj.name = e.target.value
     },
   },
 }
@@ -507,7 +507,7 @@ button.type-header {
   /* font-size: 2rem; */
   flex: 1 1 0;
 }
-.frame-title-row {
+.obj-title-row {
   position: relative;
   display: flex;
   justify-content: stretch;

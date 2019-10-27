@@ -11,11 +11,11 @@ import cyConfig from './cyConfig.js'
 
 export const $port = createPortStore()
 export const $obj = createObjectStore($port)
-const rootFrame = $obj.spawnFrame({ name: 'root object' })
-$obj.spawnFrame({ name: 'sum', parent: rootFrame })
-$obj.spawnFrame({ name: 'log', parent: rootFrame })
-$obj.spawnFrame({ name: 'child 1', parent: rootFrame })
-$obj.spawnFrame({ name: 'child 2', parent: rootFrame })
+const root = $obj.spawn({ name: 'root object' })
+$obj.spawn({ name: 'sum', parent: root })
+$obj.spawn({ name: 'log', parent: root })
+$obj.spawn({ name: 'child 1', parent: root })
+$obj.spawn({ name: 'child 2', parent: root })
 
 const config = cyConfig({ $obj, $port })
 const $cy = cytoscape(config)
@@ -35,7 +35,7 @@ new Vue({
   vuetify,
   render: h => h(App),
 }).$mount('#app')
-// This loads a new schedule into cytoscape whenever the active frame changes
+// This loads a new schedule into cytoscape whenever the active obj changes
 // function Collection(fn) {
 //   let nextId = 0
 //   const s = Vue.observable({})
@@ -110,16 +110,16 @@ function createPortStore() {
 
 function createObjectStore($port) {
   let nextId = 0
+  const s = Vue.observable({})
   const store = Vue.observable({
     root: null,
     active: null,
-    s: {},
   })
-  function spawnFrame({ name = 'anon', parent } = {}) {
+  function spawn({ name = 'anon', parent } = {}) {
     const id = '' + nextId++
     const input = $port.spawn({ owner: id, name: 'in', type: 'in' })
     const output = $port.spawn({ owner: id, name: 'out', type: 'out' })
-    Vue.set(store.s, id, {
+    Vue.set(s, id, {
       id,
       name,
       parent,
@@ -142,7 +142,7 @@ function createObjectStore($port) {
     })
 
     if (parent) {
-      store.s[parent].children.push(id)
+      s[parent].children.push(id)
     } else {
       // no parent, so this has to be a new root?
       store.root = id
@@ -155,7 +155,8 @@ function createObjectStore($port) {
   }
 
   return {
+    s,
     store,
-    spawnFrame,
+    spawn,
   }
 }
